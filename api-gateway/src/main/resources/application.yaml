@@ -1,0 +1,30 @@
+server:
+  port: 1997
+
+app:
+  api-prefix: /api
+  public-end-points: "/auth/api/app/.*"
+  auth-service-info:
+    name: "auth_service"
+    url: http://localhost:8881
+    path: ${app.api-prefix}/auth/**
+
+spring:
+  application:
+    name: api-gateway
+  sleuth:
+    sampler:
+      probability: 1.0 # Ti le ghi log
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  metrics:
+    enable:
+      all: true
