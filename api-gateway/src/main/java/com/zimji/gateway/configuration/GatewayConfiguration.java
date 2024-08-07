@@ -18,11 +18,11 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class GatewayConfiguration {
 
-    AppProperties appProperties;
+    GatewayProperties gatewayProperties;
 
     @Bean
     public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
-        AppProperties.AuthServiceInfo authServiceInfo = appProperties.getAuthServiceInfo();
+        GatewayProperties.AuthServiceInfo authServiceInfo = gatewayProperties.getAuthServiceInfo();
         return builder.routes()
                 .route(authServiceInfo.getName(), r -> r
                         .path(authServiceInfo.getPath())

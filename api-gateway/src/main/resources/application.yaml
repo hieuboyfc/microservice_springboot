@@ -1,7 +1,7 @@
 server:
   port: 1997
 
-app:
+gateway:
   api-prefix: /api
   public-end-points: "/auth/api/app/.*"
   auth-service-info:

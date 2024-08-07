@@ -12,9 +12,9 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 @Component
 @Configuration
-@ConfigurationProperties(prefix = "app")
+@ConfigurationProperties(prefix = "gateway")
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class AppProperties {
+public class GatewayProperties {
 
     String apiPrefix;
     String publicEndPoints;
