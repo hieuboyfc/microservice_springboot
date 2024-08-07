@@ -31,11 +31,11 @@ import java.util.Date;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
 
+    static Logger LOGGER = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
+
     AppProperties appProperties;
     AuthService authService;
     ObjectMapper objectMapper;
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
