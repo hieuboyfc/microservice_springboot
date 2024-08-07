@@ -1,7 +1,7 @@
 server:
   port: 1997
 
-gateway:
+app:
   api-prefix: /api
   public-end-points: "/auth/api/app/.*"
   auth-service-info:
@@ -15,7 +15,14 @@ spring:
   sleuth:
     sampler:
       probability: 1.0 # Ti le ghi log
+  # Định nghĩa route fallback
+  web:
+    flux:
+      router:
+        - path: /fallback
+          handler: myFallbackHandler
 
+# Cấu hình logging
 logging:
   level:
     org.springframework.cloud.gateway: DEBUG

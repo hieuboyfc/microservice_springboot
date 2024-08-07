@@ -31,7 +31,7 @@ import java.util.Date;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
 
-    GatewayProperties gatewayProperties;
+    AppProperties appProperties;
     AuthService authService;
     ObjectMapper objectMapper;
 
@@ -100,10 +100,10 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
     }
 
     private boolean isPublicEndpoint(ServerHttpRequest request) {
-        String[] publicEndpoints = gatewayProperties.getPublicEndPoints().split(",");
+        String[] publicEndpoints = appProperties.getPublicEndPoints().split(",");
         return Arrays
                 .stream(publicEndpoints)
-                .anyMatch(item -> request.getURI().getPath().matches(gatewayProperties.getApiPrefix() + item));
+                .anyMatch(item -> request.getURI().getPath().matches(appProperties.getApiPrefix() + item));
     }
 
 }
