@@ -1,3 +1,4 @@
+/*
 package com.zimji.gateway.configuration;
 
 import jakarta.annotation.Nullable;
@@ -90,3 +91,4 @@ public class RestTemplateConfig {
     }
 
 }
+*/

@@ -13,25 +13,72 @@ app:
 spring:
   application:
     name: api-gateway
+
   sleuth:
     sampler:
-      probability: 1.0 # Ti le ghi log
-
-# Cấu hình logging
-logging:
-  level:
-    org.springframework.web: DEBUG
-    org.springframework.cloud.gateway: DEBUG
-    org.springframework.web.reactive.function.client: DEBUG
+      always-sample: true # Luôn theo dõi mọi truy vấn
+      probability: 0.5 # Tỷ lệ mẫu (sampling rate), ví dụ 0.5 nghĩa là 50% các truy vấn sẽ được theo dõi
+      rate-limiter:
+        enabled: true # Kích hoạt tính năng giới hạn tỷ lệ gửi dữ liệu.
+        max-per-second: 10 # Giới hạn số lượng truy vấn theo dõi tối đa mỗi giây (10 truy vấn/giây).
+    logging:
+      pattern:
+        traceId: "%X{X-B3-TraceId}" # Thêm Trace ID vào logs, giúp theo dõi các truy vấn.
+        spanId: "%X{X-B3-SpanId}" # Thêm Span ID vào logs, giúp phân tích chi tiết các bước trong một truy vấn.
+        userId: "%X{user-id}" # Thêm User ID vào logs (nếu có).
+        serviceVersion: "%X{service-version}" # Thêm phiên bản dịch vụ vào logs (nếu có).
+        timestamp: "%d{yyyy-MM-dd HH:mm:ss}" # Thêm thời gian vào logs, theo định dạng ngày giờ cụ thể.
+        level: "%level" # Thêm mức độ log vào logs (ví dụ: INFO, ERROR).
+    zipkin:
+      base-url: http://localhost:9411/ # URL của Zipkin Server
+      sender:
+        type: web # Sử dụng HTTP để gửi dữ liệu theo dõi đến Zipkin
+        flush-interval: 5s # Thời gian giữa các lần gửi dữ liệu (Flush Interval)
+        connect-timeout: 5s # Thời gian chờ khi kết nối
+        read-timeout: 10s # Thời gian chờ khi đọc dữ liệu
+        encoding: json # Sử dụng định dạng JSON
+    tags:
+      service-name: "api-gateway"
+      environment: "production"
+      version: "1.0.0"
+      region: "us-east-1" # Khu vực địa lý
+      team: "team-abc" # Nhóm phát triển
+    # Cấu hình exporters, nếu cần
+    tracing:
+      exporters:
+        jaeger:
+          endpoint: "http://jaeger-collector:14250"
+          protocol: "http"
+        zipkin:
+          endpoint: "http://zipkin-collector:9411/api/v2/spans"
+          protocol: "http"
+    # Cấu hình exception handling
+    error:
+      enabled: true
+      level: ERROR
+      capture-exceptions: true
+      notification:
+        enabled: true
+        endpoint: "http://alert-service:8080/notify"
+    instrumentation:
+      metrics:
+        enabled: true
+        endpoint: "http://metrics-collector:9090/metrics"
+        path: "/metrics"
+      custom-metrics:
+        http-requests: true
+        db-queries: true
 
 management:
   endpoints:
     web:
       exposure:
-        include: '*' # health,info,metrics,prometheus
+        include: "*" # Bao gồm tất cả các điểm kết nối như health, info, metrics, prometheus
   endpoint:
     prometheus:
-      enabled: true
+      enabled: true # Kích hoạt điểm kết nối Prometheus
   metrics:
     enable:
-      all: true
+      all: true # Kích hoạt tất cả các chỉ số metrics
+  server:
+    port: 1234 # Cấu hình cổng cho server Actuator

@@ -5,6 +5,10 @@ import io.netty.channel.ChannelOption;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.reactive.CorsWebFilter;
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
+import org.springframework.web.reactive.config.WebFluxConfigurer;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.support.WebClientAdapter;
@@ -13,9 +17,25 @@ import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 
 import java.time.Duration;
+import java.util.List;
 
 @Configuration
-public class WebClientConfig {
+public class WebClientConfig implements WebFluxConfigurer {
+
+    @Bean
+    public CorsWebFilter corsWebFilter() {
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+        corsConfiguration.setAllowedOrigins(List.of("*")); // List.of("https://example.com")
+        corsConfiguration.setAllowedHeaders(List.of("*")); // List.of("Authorization", "Content-Type"))
+        corsConfiguration.setAllowedMethods(List.of("*")); // List.of("GET", "POST", "PUT", "DELETE")
+        corsConfiguration.setExposedHeaders(List.of("Authorization", "X-Auth-Token")); // Tiêu đề phản hồi được lộ ra
+        corsConfiguration.setAllowCredentials(true); // Cho phép cookie hoặc thông tin xác thực
+
+        UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();
+        urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
+
+        return new CorsWebFilter(urlBasedCorsConfigurationSource);
+    }
 
     @Bean
     public WebClient webClient() {
@@ -36,8 +56,8 @@ public class WebClientConfig {
     @Bean
     public WebClient.Builder webClientBuilder() {
         HttpClient httpClient = HttpClient.create()
-                .responseTimeout(Duration.ofMillis(5000))
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000);
+                .responseTimeout(Duration.ofMillis(5000)) // Timeout cho phản hồi
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000); // Timeout khi kết nối
 
         return WebClient.builder()
                 .clientConnector(new ReactorClientHttpConnector(httpClient))
