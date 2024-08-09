@@ -13,6 +13,7 @@ public class FallbackAPI {
     @GetMapping
     public ResponseEntity<?> fallback() {
         BaseResponse<?> baseResponse = BaseResponse.builder()
+                .code("200")
                 .result("Service is temporarily unavailable. Please try again later.")
                 .build();
         return ResponseEntity.ok(baseResponse);

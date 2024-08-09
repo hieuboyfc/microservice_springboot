@@ -1,16 +1,25 @@
 package com.zimji.gateway.configuration;
 
 import com.zimji.gateway.client.AuthClient;
-import com.zimji.gateway.payload.response.BaseResponse;
+import io.github.bucket4j.Bandwidth;
+import io.github.bucket4j.Bucket;
+import io.github.bucket4j.ConsumptionProbe;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.ssl.SslContextBuilder;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsWebFilter;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
+import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -27,7 +36,11 @@ import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 @Configuration
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class WebClientConfig implements WebFluxConfigurer {
+
+    static Logger LOGGER = LoggerFactory.getLogger(WebClientConfig.class);
 
     @Bean
     public CorsWebFilter corsWebFilter() {
@@ -61,6 +74,7 @@ public class WebClientConfig implements WebFluxConfigurer {
     }
 
     @Bean
+    @Order(1)
     public WebClient.Builder webClientBuilder() {
         HttpClient httpClient = HttpClient.create()
                 .responseTimeout(Duration.ofMillis(5000)) // Timeout cho phản hồi
@@ -82,36 +96,47 @@ public class WebClientConfig implements WebFluxConfigurer {
                         .codecs(config -> config.defaultCodecs().maxInMemorySize(16 * 1024 * 1024)) // 16MB
                         .build())
                 .defaultHeader("Accept", "application/json")
-                .defaultHeader("User-Agent", "Gateway-Service")
+                .defaultHeader("User-Agent", "GatewayService")
                 .clientConnector(new ReactorClientHttpConnector(httpClient))
-                .filter(logRequest())
-                .filter(logResponse())
-                .filter(retryFilter()); // Đưa filter retry vào cuối chuỗi
+                .filter(retryFilter())
+                .filter(rateLimitingFilter())
+                .filter(metricsFilter())
+                .filter(headerEnrichmentFilter());
     }
 
-    private ExchangeFilterFunction logRequest() {
+    private ExchangeFilterFunction metricsFilter() {
         return ExchangeFilterFunction.ofRequestProcessor(clientRequest -> {
-            System.out.println("---> Request: " + clientRequest.method() + " " + clientRequest.url());
-            clientRequest.headers().forEach((name, values) ->
-                    values.forEach(value -> System.out.println(name + ": " + value)));
+            LOGGER.info("---> Request: " + clientRequest.method() + " " + clientRequest.url());
+            clientRequest
+                    .headers()
+                    .forEach((name, values) ->
+                            values.forEach(value -> LOGGER.info(name + ": " + value))
+                    );
             return Mono.just(clientRequest);
-        });
-    }
-
-    private ExchangeFilterFunction logResponse() {
-        return ExchangeFilterFunction.ofResponseProcessor(clientResponse -> {
-            System.out.println("---> Response Status: " + clientResponse.statusCode());
-            clientResponse.headers().asHttpHeaders().forEach((name, values) ->
-                    values.forEach(value -> System.out.println(name + ": " + value)));
+        }).andThen(ExchangeFilterFunction.ofResponseProcessor(clientResponse -> {
+            LOGGER.info("---> Response Status: " + clientResponse.statusCode());
+            clientResponse
+                    .headers()
+                    .asHttpHeaders()
+                    .forEach((name, values) ->
+                            values.forEach(value -> LOGGER.info(name + ": " + value))
+                    );
             return Mono.just(clientResponse);
-        });
+        }));
     }
 
     private ExchangeFilterFunction retryFilter() {
         return ExchangeFilterFunction.ofResponseProcessor(clientResponse ->
-                clientResponse.bodyToMono(BaseResponse.class)
-                        .retryWhen(retrySpec()) // Áp dụng retry logic
-                        .then(Mono.just(clientResponse)) // Trả về phản hồi gốc sau khi retry
+                Mono.defer(() -> {
+                    if (clientResponse.statusCode().is4xxClientError()
+                            || clientResponse.statusCode().is5xxServerError()) {
+                        return Mono.just(clientResponse)
+                                .retryWhen(retrySpec())
+                                .flatMap(Mono::just); // Trả về phản hồi gốc sau khi retry
+                    } else {
+                        return Mono.just(clientResponse); // Nếu không có lỗi, trả về phản hồi gốc
+                    }
+                })
         );
     }
 
@@ -120,6 +145,33 @@ public class WebClientConfig implements WebFluxConfigurer {
                 .backoff(3, Duration.ofSeconds(1)) // Retry 3 lần với khoảng cách thời gian là 1 giây
                 .maxBackoff(Duration.ofSeconds(10)) // Thời gian chờ tối đa là 10 giây
                 .filter(throwable -> throwable instanceof IOException || throwable instanceof TimeoutException); // Retry chỉ cho các lỗi nhất định
+    }
+
+    private ExchangeFilterFunction rateLimitingFilter() {
+        // Tạo cấu hình cho bucket với giới hạn 100 yêu cầu mỗi phút
+        Bandwidth bandwidth = Bandwidth.simple(100, Duration.ofMinutes(1));
+
+        Bucket bucket = Bucket.builder()
+                .addLimit(bandwidth)
+                .build();
+
+        return ExchangeFilterFunction.ofRequestProcessor(clientRequest -> {
+            ConsumptionProbe probe = bucket.tryConsumeAndReturnRemaining(1);
+            if (probe.isConsumed()) {
+                return Mono.just(clientRequest);
+            } else {
+                return Mono.error(new RuntimeException("Rate limit exceeded. Retry in " + probe.getNanosToWaitForRefill() + " nanoseconds."));
+            }
+        });
+    }
+
+    private ExchangeFilterFunction headerEnrichmentFilter() {
+        return ExchangeFilterFunction.ofRequestProcessor(clientRequest -> {
+            ClientRequest newRequest = ClientRequest.from(clientRequest)
+                    .headers(headers -> headers.add("X-Custom-Header", "value"))
+                    .build();
+            return Mono.just(newRequest);
+        });
     }
 
 }

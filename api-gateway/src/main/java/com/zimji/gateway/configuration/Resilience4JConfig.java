@@ -1,3 +1,4 @@
+/*
 package com.zimji.gateway.configuration;
 
 import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
@@ -89,4 +90,4 @@ public class Resilience4JConfig {
         };
     }
 
-}
+}*/
