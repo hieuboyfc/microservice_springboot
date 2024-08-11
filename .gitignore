@@ -1,0 +1,14 @@
+# Consul
+config/grafana/consul/data
+config/grafana/consul/logs
+
+# Loki
+config/grafana/loki/cache
+config/grafana/loki/chunks
+config/grafana/loki/compactor
+config/grafana/loki/index
+config/grafana/loki/rules
+config/grafana/loki/wal
+
+# Promtail
+config/grafana/promtail/logs

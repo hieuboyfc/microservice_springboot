@@ -13,14 +13,14 @@ services:
       - ./consul/data:/consul/data
       - ./consul/logs:/consul/logs
       - ./consul/consul-config.json:/consul/consul-config.json
-      - ./consul/register-services.sh:/consul/register-services.sh
+      - ./consul/start-consul-services.sh:/consul/start-consul-services.sh
       - ./consul/loki-service.json:/consul/loki-service.json
       - ./consul/promtail-service.json:/consul/promtail-service.json
       - ./consul/my-service.json:/consul/my-service.json
-    command: ["/consul/register-services.sh"]
+    command: ["/consul/start-consul-services.sh"]
     # command: ["consul", "agent", "-config-file=/consul/consul-config.json"]
     networks:
-      - consul-network
+      - grafana-network
     restart: unless-stopped
 
   promtail:
@@ -34,6 +34,8 @@ services:
       - ./promtail/logs:/var/log
       - ./promtail/promtail-config.yaml:/promtail/promtail-config.yaml
     command: -config.file=/promtail/promtail-config.yaml
+    networks:
+      - grafana-network
     restart: unless-stopped
 
   loki:
@@ -47,6 +49,8 @@ services:
       - ./loki:/loki
       - ./loki/loki-config.yaml:/loki/loki-config.yaml
     command: -config.expand-env=true -config.file=/loki/loki-config.yaml
+    networks:
+      - grafana-network
     restart: unless-stopped
 
 # volumes:
@@ -56,4 +60,5 @@ services:
 #  loki_data:
 
 networks:
-  consul-network:
+  grafana-network:
+    driver: bridge

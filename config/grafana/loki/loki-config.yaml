@@ -11,7 +11,7 @@ common:
     kvstore:
       store: consul
       consul:
-        host: http://localhost:8500
+        host: http://consul:8500
   replication_factor: 1
   path_prefix: /loki
 
@@ -80,11 +80,11 @@ ruler:
   rule_path: /loki/rules
   alertmanager_url: http://localhost:9093 # Nếu bạn không dùng Alertmanager, có thể bỏ qua
   ring:
-    instance_addr: 127.0.0.1:9095
+    instance_addr: localhost
     kvstore:
       store: consul
       consul:
-        host: http://localhost:8500
+        host: http://consul:8500
 
 # auth_enabled: Tắt xác thực để đơn giản hóa cấu hình (bạn có thể bật nếu cần bảo mật).
 # server: Cấu hình cho HTTP và gRPC port, mức độ log, và các tùy chọn timeout.
