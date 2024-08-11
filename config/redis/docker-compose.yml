@@ -1,0 +1,92 @@
+version: '3.8'
+
+services:
+  redis-6380:
+    image: redis:latest
+    container_name: redis-6380
+    ports:
+      - "6380:6380"
+    volumes:
+      - ./conf/redis-6380.conf:/usr/local/etc/redis/redis.conf
+      - redis-data-6380:/data
+    command: redis-server /usr/local/etc/redis/redis.conf
+    networks:
+      - redis-network
+
+  redis-6381:
+    image: redis:latest
+    container_name: redis-6381
+    ports:
+      - "6381:6381"
+    volumes:
+      - ./conf/redis-6381.conf:/usr/local/etc/redis/redis.conf
+      - redis-data-6381:/data
+    command: redis-server /usr/local/etc/redis/redis.conf
+    networks:
+      - redis-network
+
+  redis-6382:
+    image: redis:latest
+    container_name: redis-6382
+    ports:
+      - "6382:6382"
+    volumes:
+      - ./conf/redis-6382.conf:/usr/local/etc/redis/redis.conf
+      - redis-data-6382:/data
+    command: redis-server /usr/local/etc/redis/redis.conf
+    networks:
+      - redis-network
+
+  redis-6383:
+    image: redis:latest
+    container_name: redis-6383
+    ports:
+      - "6383:6383"
+    volumes:
+      - ./conf/redis-6383.conf:/usr/local/etc/redis/redis.conf
+      - redis-data-6383:/data
+    command: redis-server /usr/local/etc/redis/redis.conf
+    networks:
+      - redis-network
+
+  redis-6384:
+    image: redis:latest
+    container_name: redis-6384
+    ports:
+      - "6384:6384"
+    volumes:
+      - ./conf/redis-6384.conf:/usr/local/etc/redis/redis.conf
+      - redis-data-6384:/data
+    command: redis-server /usr/local/etc/redis/redis.conf
+    networks:
+      - redis-network
+
+  redis-6385:
+    image: redis:latest
+    container_name: redis-6385
+    ports:
+      - "6385:6385"
+    volumes:
+      - ./conf/redis-6385.conf:/usr/local/etc/redis/redis.conf
+      - redis-data-6385:/data
+    command: redis-server /usr/local/etc/redis/redis.conf
+    networks:
+      - redis-network
+
+volumes:
+  redis-data-6380:
+    driver: local
+  redis-data-6381:
+    driver: local
+  redis-data-6382:
+    driver: local
+  redis-data-6383:
+    driver: local
+  redis-data-6384:
+    driver: local
+  redis-data-6385:
+    driver: local
+
+networks:
+  redis-network:
+    driver: bridge

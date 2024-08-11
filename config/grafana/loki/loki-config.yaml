@@ -1,0 +1,103 @@
+auth_enabled: false
+
+server:
+  log_level: info  # Thay đổi từ debug nếu cần giảm lượng log
+  http_listen_port: 3100 # Cổng HTTP cho Loki
+  grpc_listen_port: 9095 # Cổng gRPC cho Loki (có thể không cần nếu bạn không dùng gRPC)
+
+common:
+  ring:
+    instance_addr: localhost # Các cấu hình khác liên quan đến clustering
+    kvstore:
+      store: consul
+      consul:
+        host: http://localhost:8500
+  replication_factor: 1
+  path_prefix: /loki
+
+ingester:
+  wal:
+    enabled: true
+    dir: /loki/wal # Đường dẫn tới WAL (Write-Ahead Log)
+  chunk_idle_period: 5m
+  chunk_target_size: 1048576
+  chunk_retain_period: 1h
+  max_chunk_age: 1h
+  max_transfer_retries: 0
+  shutdown_marker_path: /loki/shutdown_marker # Đường dẫn tới tệp marker khi tắt
+
+compactor:
+  working_directory: /loki/compactor # Đường dẫn tới thư mục working của compactor
+  shared_store: filesystem # Chọn filesystem hoặc các tùy chọn khác
+  retention_enabled: true
+
+frontend:
+  # Không cần cấu hình đặc biệt nếu bạn không sử dụng frontend cho truy vấn
+  compress_responses: true
+  max_outstanding_per_tenant: 10000
+
+schema_config:
+  configs:
+    - from: 2024-08-05
+      store: boltdb-shipper
+      object_store: filesystem
+      schema: v13
+      index:
+        prefix: index_
+        period: 24h
+
+storage_config:
+  boltdb_shipper:
+    active_index_directory: /loki/index
+    cache_location: /loki/cache
+    shared_store: filesystem
+    cache_ttl: 24h
+  filesystem:
+    directory: /loki/chunks
+
+limits_config:
+  enforce_metric_name: false
+  reject_old_samples: true
+  reject_old_samples_max_age: 168h
+  ingestion_rate_mb: 10
+  ingestion_burst_size_mb: 20
+  max_streams_per_user: 100000
+  max_query_series: 500000
+
+chunk_store_config:
+  max_look_back_period: 1w  # Thay đổi để cho phép tìm kiếm dữ liệu cũ hơn
+
+table_manager:
+  retention_deletes_enabled: true
+  retention_period: 168h
+
+ruler:
+  storage:
+    type: local
+    local:
+      directory: /loki/rules
+  enable_api: true
+  rule_path: /loki/rules
+  alertmanager_url: http://localhost:9093 # Nếu bạn không dùng Alertmanager, có thể bỏ qua
+  ring:
+    instance_addr: 127.0.0.1:9095
+    kvstore:
+      store: consul
+      consul:
+        host: http://localhost:8500
+
+# auth_enabled: Tắt xác thực để đơn giản hóa cấu hình (bạn có thể bật nếu cần bảo mật).
+# server: Cấu hình cho HTTP và gRPC port, mức độ log, và các tùy chọn timeout.
+# distributor:
+# ---> ring: Sử dụng Consul để lưu trữ trạng thái của ring. Cấu hình replication để đảm bảo tính sẵn sàng.
+# ---> shard_by_all_labels: Kích hoạt phân phối log theo tất cả các nhãn để cân bằng tải hiệu quả.
+# ingester:
+# ---> lifecycler: Cấu hình cho việc quản lý vòng đời của ingester, sử dụng Consul cho việc lưu trữ trạng thái.
+# ---> chunk_target_size và chunk_pool_size: Kích thước mục tiêu của các chunk và kích thước bộ nhớ cache cho chunk.
+# querier: Cấu hình các tùy chọn truy vấn để tối ưu hóa hiệu suất.
+# frontend: Cấu hình cho frontend để xử lý các truy vấn đến.
+# storage_config: Cấu hình lưu trữ chỉ mục với boltdb_shipper và chỉ định thư mục hoạt động.
+# schema_config: Định cấu hình schema để đảm bảo tương thích với các phiên bản Loki.
+# table_manager: Cấu hình để quản lý việc xóa dữ liệu cũ và giữ lại dữ liệu trong thời gian nhất định.
+# client: Thêm nhãn bên ngoài để phân biệt các cluster.
+# blocks_sync: Cấu hình đồng bộ hóa các block và bộ nhớ cache cho chunk.

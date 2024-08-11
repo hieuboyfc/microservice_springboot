@@ -1,0 +1,11 @@
+{
+  "service": {
+    "name": "loki",
+    "tags": ["logging"],
+    "port": 3100,
+    "check": {
+      "http": "http://localhost:3100/ready",
+      "interval": "10s"
+    }
+  }
+}

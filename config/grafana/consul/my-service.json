@@ -1,0 +1,11 @@
+{
+  "service": {
+    "name": "my-service",
+    "tags": ["web"],
+    "port": 8080,
+    "check": {
+      "http": "http://localhost:8080/health",
+      "interval": "10s"
+    }
+  }
+}

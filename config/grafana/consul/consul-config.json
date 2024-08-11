@@ -1,0 +1,17 @@
+{
+  "server": true,
+  "datacenter": "dc1",
+  "node_name": "consul-server",
+  "data_dir": "/consul/data",
+  "bind_addr": "0.0.0.0",
+  "client_addr": "0.0.0.0",
+  "bootstrap_expect": 1,
+  "ui_config": {
+    "enabled": true
+  },
+  "log_level": "INFO",
+  "log_file": "/consul/logs/server.log",
+  "telemetry": {
+    "prometheus_retention_time": "24h"
+  }
+}
