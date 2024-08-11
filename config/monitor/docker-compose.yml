@@ -18,7 +18,7 @@ services:
     command: ["/consul/start-consul-services.sh"]
     # command: ["consul", "agent", "-config-file=/consul/consul-config.json"]
     networks:
-      - grafana-network
+      - zimji-network
     restart: unless-stopped
 
   loki:
@@ -32,7 +32,7 @@ services:
       - ./loki/loki-config.yaml:/loki/loki-config.yaml
     command: -config.expand-env=true -config.file=/loki/loki-config.yaml
     networks:
-      - grafana-network
+      - zimji-network
     restart: unless-stopped
 
   promtail:
@@ -46,9 +46,22 @@ services:
       - ./promtail/promtail-config.yaml:/promtail/promtail-config.yaml
     command: -config.file=/promtail/promtail-config.yaml
     networks:
-      - grafana-network
+      - zimji-network
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:11.1.1
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana/data:/var/lib/grafana
+      - ./grafana/logs:/var/log/grafana
+      - ./grafana/grafana-config.yaml:/etc/grafana/grafana.ini
+    networks:
+      - zimji-network
     restart: unless-stopped
 
 networks:
-  grafana-network:
+  zimji-network:
     driver: bridge

@@ -1,10 +1,10 @@
 {
   "service": {
-    "name": "loki",
+    "name": "promtail",
     "tags": ["logging"],
-    "port": 3100,
+    "port": 9080,
     "check": {
-      "http": "http://localhost:3100/ready",
+      "http": "http://promtail:9080/metrics",
       "interval": "10s"
     }
   }
