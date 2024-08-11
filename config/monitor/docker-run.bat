@@ -1,5 +1,5 @@
 @echo off
-echo ---> Starting Docker Compose...
+echo --- Starting Docker Compose...
 @echo off
 
 :: Khởi động Consul
@@ -28,7 +28,7 @@ timeout /t 15 /nobreak > NUL
 
 echo All Services have been started!
 
-echo ---> Waiting for Consul to start...
+echo --- Waiting for Consul to start...
 timeout /t 15 /nobreak > NUL
 
 :: Dang ky Dich vu Loki
