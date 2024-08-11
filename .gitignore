@@ -12,3 +12,6 @@ config/grafana/loki/wal
 
 # Promtail
 config/grafana/promtail/logs
+
+# Logs
+logs
