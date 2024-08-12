@@ -13,21 +13,21 @@ common:
       consul:
         host: http://consul:8500
   replication_factor: 1
-  path_prefix: /loki
+  path_prefix: /loki/data
 
 ingester:
   wal:
     enabled: true
-    dir: /loki/wal # Đường dẫn tới WAL (Write-Ahead Log)
+    dir: /loki/data/wal # Đường dẫn tới WAL (Write-Ahead Log)
   chunk_idle_period: 5m
   chunk_target_size: 1048576
   chunk_retain_period: 1h
   max_chunk_age: 1h
   max_transfer_retries: 0
-  shutdown_marker_path: /loki/shutdown_marker # Đường dẫn tới tệp marker khi tắt
+  shutdown_marker_path: /loki/data/shutdown_marker # Đường dẫn tới tệp marker khi tắt
 
 compactor:
-  working_directory: /loki/compactor # Đường dẫn tới thư mục working của compactor
+  working_directory: /loki/data/compactor # Đường dẫn tới thư mục working của compactor
   shared_store: filesystem # Chọn filesystem hoặc các tùy chọn khác
   retention_enabled: true
 
@@ -48,12 +48,12 @@ schema_config:
 
 storage_config:
   boltdb_shipper:
-    active_index_directory: /loki/index
-    cache_location: /loki/cache
+    active_index_directory: /loki/data/index
+    cache_location: /loki/data/cache
     shared_store: filesystem
     cache_ttl: 24h
   filesystem:
-    directory: /loki/chunks
+    directory: /loki/data/chunks
 
 limits_config:
   enforce_metric_name: false
@@ -75,10 +75,10 @@ ruler:
   storage:
     type: local
     local:
-      directory: /loki/rules
+      directory: /loki/data/rules
   enable_api: true
-  rule_path: /loki/rules
-  alertmanager_url: http://localhost:9093 # Nếu bạn không dùng Alertmanager, có thể bỏ qua
+  rule_path: /loki/data/rules
+  alertmanager_url: http://alertmanager:9093 # Nếu bạn không dùng Alertmanager, có thể bỏ qua
   ring:
     instance_addr: localhost
     kvstore:

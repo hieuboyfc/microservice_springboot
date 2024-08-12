@@ -1,17 +1,24 @@
+# Database
+# config/database/postgres/data
+
+# Redis
+config/redis/data
+
 # Consul
 config/monitor/consul/data
 config/monitor/consul/logs
 
 # Loki
-config/monitor/loki/cache
-config/monitor/loki/chunks
-config/monitor/loki/compactor
-config/monitor/loki/index
-config/monitor/loki/rules
-config/monitor/loki/wal
+config/monitor/loki/data
+
+# Redis Exporter
+config/monitor/redis_exporter/logs
 
 # Promtail
 config/monitor/promtail/logs
+
+# Prometheus
+config/monitor/prometheus/logs
 
 # Grafana
 config/monitor/grafana/logs

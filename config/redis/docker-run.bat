@@ -39,7 +39,7 @@ echo Waiting for Redis Cluster 6385 to start...
 timeout /t 10 /nobreak > NUL
 
 echo Waiting for Redis to start...
-timeout /t 5
+timeout /t 5 /nobreak > NUL
 
 :: Khởi tạo Redis Cluster...
 echo Creating Redis Cluster...
@@ -51,7 +51,7 @@ docker exec -it redis_6380 redis-cli --cluster create ^
   redis_6384:6379 ^
   redis_6385:6379 ^
   --cluster-replicas 1
-timeout /t 5
+timeout /t 5 /nobreak > NUL
 
 echo Redis Cluster setup complete.
 

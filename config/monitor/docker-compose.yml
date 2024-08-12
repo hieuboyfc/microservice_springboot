@@ -29,6 +29,7 @@ services:
       - "9095:9095"  # Cổng gRPC cho Loki (nếu cần)
     volumes:
       - ./loki:/loki
+      - ./loki:/logs
       - ./loki/loki-config.yaml:/loki/loki-config.yaml
     command: -config.expand-env=true -config.file=/loki/loki-config.yaml
     networks:
@@ -43,6 +44,7 @@ services:
       - "9096:9096"  # gRPC port
     volumes:
       - C:/Users/ZimJi/Desktop/microservice_springboot/logs:/logs
+      - ./promtail/logs:/promtail/logs
       - ./promtail/promtail-config.yaml:/promtail/promtail-config.yaml
     command: -config.file=/promtail/promtail-config.yaml
     networks:
@@ -56,6 +58,7 @@ services:
       - "9093:9093"
     volumes:
       - ./alertmanager/alertmanager.yml:/alertmanager/alertmanager.yml
+      - ./alertmanager/logs:/alertmanager/logs
     networks:
       - zimji-network
     restart: unless-stopped
@@ -65,6 +68,8 @@ services:
     container_name: redis_exporter
     ports:
       - "9121:9121"
+    volumes:
+      - ./redis_exporter/logs:/redis_exporter_logs
     networks:
       - zimji-network
     command: >
@@ -84,6 +89,7 @@ services:
     volumes:
       - ./prometheus/prometheus.yml:/prometheus/prometheus.yml
       - ./prometheus/alert.rules.yml:/prometheus/alert.rules.yml
+      - ./prometheus/logs:/prometheus/logs
     networks:
       - zimji-network
     restart: unless-stopped
