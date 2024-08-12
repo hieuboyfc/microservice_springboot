@@ -8,6 +8,7 @@ services:
       - "6380:6379"
     volumes:
       - ./conf/redis-6380.conf:/usr/local/etc/redis/redis.conf
+      - ./redis/redis_data_6380:/data
       - redis_data_6380:/data
     command: redis-server /usr/local/etc/redis/redis.conf
     networks:
@@ -20,6 +21,7 @@ services:
       - "6381:6379"
     volumes:
       - ./conf/redis-6381.conf:/usr/local/etc/redis/redis.conf
+      - ./redis/redis_data_6381:/data
       - redis_data_6381:/data
     command: redis-server /usr/local/etc/redis/redis.conf
     networks:
@@ -32,6 +34,7 @@ services:
       - "6382:6379"
     volumes:
       - ./conf/redis-6382.conf:/usr/local/etc/redis/redis.conf
+      - ./redis/redis_data_6382:/data
       - redis_data_6382:/data
     command: redis-server /usr/local/etc/redis/redis.conf
     networks:
@@ -44,6 +47,7 @@ services:
       - "6383:6379"
     volumes:
       - ./conf/redis-6383.conf:/usr/local/etc/redis/redis.conf
+      - ./redis/redis_data_6383:/data
       - redis_data_6383:/data
     command: redis-server /usr/local/etc/redis/redis.conf
     networks:
@@ -56,6 +60,7 @@ services:
       - "6384:6379"
     volumes:
       - ./conf/redis-6384.conf:/usr/local/etc/redis/redis.conf
+      - ./redis/redis_data_6384:/data
       - redis_data_6384:/data
     command: redis-server /usr/local/etc/redis/redis.conf
     networks:
@@ -68,6 +73,7 @@ services:
       - "6385:6379"
     volumes:
       - ./conf/redis-6385.conf:/usr/local/etc/redis/redis.conf
+      - ./redis/redis_data_6385:/data
       - redis_data_6385:/data
     command: redis-server /usr/local/etc/redis/redis.conf
     networks:
