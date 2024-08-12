@@ -8,7 +8,7 @@ services:
       - "6380:6379"
     volumes:
       - ./conf/redis-6380.conf:/usr/local/etc/redis/redis.conf
-      - redis-data-6380:/data
+      - redis_data_6380:/data
     command: redis-server /usr/local/etc/redis/redis.conf
     networks:
       - redis-network
@@ -20,7 +20,7 @@ services:
       - "6381:6379"
     volumes:
       - ./conf/redis-6381.conf:/usr/local/etc/redis/redis.conf
-      - redis-data-6381:/data
+      - redis_data_6381:/data
     command: redis-server /usr/local/etc/redis/redis.conf
     networks:
       - redis-network
@@ -32,7 +32,7 @@ services:
       - "6382:6379"
     volumes:
       - ./conf/redis-6382.conf:/usr/local/etc/redis/redis.conf
-      - redis-data-6382:/data
+      - redis_data_6382:/data
     command: redis-server /usr/local/etc/redis/redis.conf
     networks:
       - redis-network
@@ -44,7 +44,7 @@ services:
       - "6383:6379"
     volumes:
       - ./conf/redis-6383.conf:/usr/local/etc/redis/redis.conf
-      - redis-data-6383:/data
+      - redis_data_6383:/data
     command: redis-server /usr/local/etc/redis/redis.conf
     networks:
       - redis-network
@@ -56,7 +56,7 @@ services:
       - "6384:6379"
     volumes:
       - ./conf/redis-6384.conf:/usr/local/etc/redis/redis.conf
-      - redis-data-6384:/data
+      - redis_data_6384:/data
     command: redis-server /usr/local/etc/redis/redis.conf
     networks:
       - redis-network
@@ -68,7 +68,7 @@ services:
       - "6385:6379"
     volumes:
       - ./conf/redis-6385.conf:/usr/local/etc/redis/redis.conf
-      - redis-data-6385:/data
+      - redis_data_6385:/data
     command: redis-server /usr/local/etc/redis/redis.conf
     networks:
       - redis-network
@@ -82,17 +82,17 @@ services:
       - redis-network
 
 volumes:
-  redis-data-6380:
+  redis_data_6380:
     driver: local
-  redis-data-6381:
+  redis_data_6381:
     driver: local
-  redis-data-6382:
+  redis_data_6382:
     driver: local
-  redis-data-6383:
+  redis_data_6383:
     driver: local
-  redis-data-6384:
+  redis_data_6384:
     driver: local
-  redis-data-6385:
+  redis_data_6385:
     driver: local
 
 networks:
