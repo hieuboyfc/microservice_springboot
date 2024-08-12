@@ -1,0 +1,85 @@
+name: CI/CD Deploy to Kubernetes
+
+on:
+  push:
+    branches:
+      - dev
+      - qas
+      - prod
+  pull_request:
+    branches:
+      - dev
+      - qas
+      - prod
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+
+      - name: Build with Gradle
+        run: ./gradlew build
+
+      - name: Build Docker image
+        run: docker build -t ${{ secrets.REGISTRY }}/api-gateway:${{ github.sha }} .
+
+      - name: Push Docker image
+        run: docker push ${{ secrets.REGISTRY }}/api-gateway:${{ github.sha }}
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Kubernetes CLI
+        uses: Azure/setup-kubectl@v1
+        with:
+          version: 'latest'
+
+      - name: Set up Kubernetes context
+        run: |
+          kubectl config set-cluster ${{ secrets.KUBE_CLUSTER_NAME }} --server=${{ secrets.KUBE_SERVER }} --certificate-authority=${{ secrets.KUBE_CA_CERT }}
+          kubectl config set-credentials ${{ secrets.KUBE_USER }} --token=${{ secrets.KUBE_TOKEN }}
+          kubectl config set-context ${{ secrets.KUBE_CONTEXT }} --cluster=${{ secrets.KUBE_CLUSTER_NAME }} --user=${{ secrets.KUBE_USER }} --namespace=${{ secrets.KUBE_NAMESPACE }}
+          kubectl config use-context ${{ secrets.KUBE_CONTEXT }}
+
+      - name: Deploy to Kubernetes
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          if [ "${{ github.ref }}" == "refs/heads/prod" ]; then
+            ENVIRONMENT=prod
+            VALUES_FILE=charts/api-gateway/values-prod.yaml
+          elif [ "${{ github.ref }}" == "refs/heads/qas" ]; then
+            ENVIRONMENT=qas
+            VALUES_FILE=charts/api-gateway/values-qas.yaml
+          else
+            ENVIRONMENT=dev
+            VALUES_FILE=charts/api-gateway/values-dev.yaml
+          fi
+          
+          echo "Deploying to $ENVIRONMENT environment with values file $VALUES_FILE"
+          
+          helm upgrade --install api-gateway charts/api-gateway --values $VALUES_FILE --set image.tag=${IMAGE_TAG}
+
+      - name: Check deployment status
+        run: |
+          kubectl rollout status deployment/api-gateway --namespace=${{ secrets.KUBE_NAMESPACE }}
+
+# REGISTRY: Địa chỉ Docker registry (ví dụ: docker.io/your-username).
+# KUBE_CLUSTER_NAME: Tên cluster Kubernetes.
+# KUBE_SERVER: Địa chỉ API server của Kubernetes.
+# KUBE_CA_CERT: Chứng chỉ CA của Kubernetes (base64 encoded).
+# KUBE_USER: Tên người dùng Kubernetes.
+# KUBE_TOKEN: Token người dùng Kubernetes.
+# KUBE_CONTEXT: Tên context Kubernetes.
+# KUBE_NAMESPACE: Namespace Kubernetes để triển khai ứng dụng.

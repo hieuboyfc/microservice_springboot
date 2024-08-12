@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.appName }}
+  labels:
+    {{- include "labels" . | nindent 6 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{ - include "selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "labels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Values.appName }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          ports:
+            - name: {{ .Values.service.name }}
+              containerPort: {{ .Values.service.targetPort }}
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: generic-config
+            - secretRef:
+                name: db-config
+          volumeMounts:
+            - name: {{ .Values.configMap.files.application.name }}
+              readOnly: true
+              mountPath: {{ .Values.configMap.files.application.mountPath }}
+              subPath: {{ .Values.configMap.files.application.subPath }}
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: {{ .Values.service.targetPort }}
+            initialDelaySeconds: 60
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: {{ .Values.service.targetPort }}
+            initialDelaySeconds: 30
+            periodSeconds: 15
+      volumes:
+        - name: {{ .Values.configMap.files.application.name }}
+          configMap:
+            name: {{ .Values.configMap.files.application.name }}
+            items:
+              - key: {{ .Values.configMap.files.application.key }}
+                path: {{ .Values.configMap.files.application.subPath }}

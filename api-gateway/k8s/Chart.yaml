@@ -1,0 +1,12 @@
+apiVersion: v2
+name: api-gateway
+description: Quản lý Gateway
+home: https://hieuboyfc.com
+keywords:
+  - zimji
+maintainers:
+  - name: zimji
+    email: hieuboyfc@gmail.com
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
