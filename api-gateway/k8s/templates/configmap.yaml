@@ -4,5 +4,5 @@ metadata:
   name: {{ .Values.appName }}-config
   namespace: {{ .Values.namespace }}
 data:
-  application.yml: |
+  application.yaml: |
     {{ .Values.config.application | nindent 4 }}

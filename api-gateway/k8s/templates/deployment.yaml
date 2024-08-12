@@ -17,6 +17,7 @@ spec:
       containers:
         - name: {{ .Values.appName }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: {{ .Values.service.name }}
               containerPort: {{ .Values.service.targetPort }}
@@ -43,6 +44,13 @@ spec:
               port: {{ .Values.service.targetPort }}
             initialDelaySeconds: 30
             periodSeconds: 15
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "1Gi"
+              cpu: "1"
       volumes:
         - name: {{ .Values.configMap.files.application.name }}
           configMap:

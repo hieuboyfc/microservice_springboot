@@ -2,12 +2,19 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: {{ .Values.appName }}-network-policy
+  namespace: {{ .Values.namespace }}
 spec:
   podSelector:
     matchLabels:
       {{ - include "selectorLabels" . | nindent 6 }}
   ingress:
-      ports:
+    - ports:
         - name: {{ .Values.service.name }}
-          containerPort: {{ .Values.service.targetPort }}
+          port: {{ .Values.service.targetPort }}
+          protocol: TCP
+  egress:
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - port: 443
           protocol: TCP
