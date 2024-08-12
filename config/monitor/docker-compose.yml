@@ -73,12 +73,12 @@ services:
     networks:
       - zimji-network
     command: >
-      --redis.addr=redis://redis_6380:6379
-      --redis.addr=redis://redis_6381:6379
-      --redis.addr=redis://redis_6382:6379
-      --redis.addr=redis://redis_6383:6379
-      --redis.addr=redis://redis_6384:6379
-      --redis.addr=redis://redis_6385:6379
+      --redis.addr=redis://redis_6380:6380
+      --redis.addr=redis://redis_6381:6381
+      --redis.addr=redis://redis_6382:6382
+      --redis.addr=redis://redis_6383:6383
+      --redis.addr=redis://redis_6384:6384
+      --redis.addr=redis://redis_6385:6385
     restart: unless-stopped
 
   prometheus:

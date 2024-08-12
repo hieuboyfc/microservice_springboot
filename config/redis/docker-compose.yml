@@ -5,7 +5,7 @@ services:
     image: redis:7.4.0
     container_name: redis_6380
     ports:
-      - "6380:6379"
+      - "6380:6380"
     volumes:
       - ./conf/redis-6380.conf:/usr/local/etc/redis/redis.conf
       - ./data/redis_data_6380:/data
@@ -18,7 +18,7 @@ services:
     image: redis:7.4.0
     container_name: redis_6381
     ports:
-      - "6381:6379"
+      - "6381:6381"
     volumes:
       - ./conf/redis-6381.conf:/usr/local/etc/redis/redis.conf
       - ./data/redis_data_6381:/data
@@ -31,7 +31,7 @@ services:
     image: redis:7.4.0
     container_name: redis_6382
     ports:
-      - "6382:6379"
+      - "6382:6382"
     volumes:
       - ./conf/redis-6382.conf:/usr/local/etc/redis/redis.conf
       - ./data/redis_data_6382:/data
@@ -44,7 +44,7 @@ services:
     image: redis:7.4.0
     container_name: redis_6383
     ports:
-      - "6383:6379"
+      - "6383:6383"
     volumes:
       - ./conf/redis-6383.conf:/usr/local/etc/redis/redis.conf
       - ./data/redis_data_6383:/data
@@ -57,7 +57,7 @@ services:
     image: redis:7.4.0
     container_name: redis_6384
     ports:
-      - "6384:6379"
+      - "6384:6384"
     volumes:
       - ./conf/redis-6384.conf:/usr/local/etc/redis/redis.conf
       - ./data/redis_data_6384:/data
@@ -70,7 +70,7 @@ services:
     image: redis:7.4.0
     container_name: redis_6385
     ports:
-      - "6385:6379"
+      - "6385:6385"
     volumes:
       - ./conf/redis-6385.conf:/usr/local/etc/redis/redis.conf
       - ./data/redis_data_6385:/data

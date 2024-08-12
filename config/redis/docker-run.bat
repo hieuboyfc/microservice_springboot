@@ -44,12 +44,12 @@ timeout /t 5 /nobreak > NUL
 :: Khởi tạo Redis Cluster...
 echo Creating Redis Cluster...
 docker exec -it redis_6380 redis-cli --cluster create ^
-  redis_6380:6379 ^
-  redis_6381:6379 ^
-  redis_6382:6379 ^
-  redis_6383:6379 ^
-  redis_6384:6379 ^
-  redis_6385:6379 ^
+  redis_6380:6380 ^
+  redis_6381:6381 ^
+  redis_6382:6382 ^
+  redis_6383:6383 ^
+  redis_6384:6384 ^
+  redis_6385:6385 ^
   --cluster-replicas 1
 timeout /t 5 /nobreak > NUL
 
