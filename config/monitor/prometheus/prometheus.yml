@@ -1,0 +1,40 @@
+# Cấu hình toàn cầu
+global:
+  scrape_interval: 15s  # Thời gian giữa các lần thu thập dữ liệu
+  evaluation_interval: 15s  # Thời gian giữa các lần đánh giá các quy tắc cảnh báo
+
+# Quy tắc cảnh báo
+rule_files:
+  - "alert.rules.yml"
+
+# Cấu hình Alertmanager
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: [ 'alertmanager:9093' ]
+
+# Cấu hình các mục tiêu (targets) để thu thập dữ liệu
+scrape_configs:
+  - job_name: 'consul'
+    static_configs:
+      - targets: [ 'consul:8500' ]
+    metrics_path: /v1/agent/metrics
+
+  - job_name: 'loki'
+    static_configs:
+      - targets: [ 'loki:3100' ]
+
+  - job_name: 'promtail'
+    static_configs:
+      - targets: [ 'promtail:9080' ]
+
+  - job_name: 'redis_exporter' # Thu thập số liệu từ Redis.
+    static_configs:
+      - targets: [ 'redis_exporter:9121' ]
+
+  - job_name: 'prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: [ 'localhost:9090' ]
+
+# node_exporter, pushgateway, blackbox_exporter, kubernetes-nodes, consul

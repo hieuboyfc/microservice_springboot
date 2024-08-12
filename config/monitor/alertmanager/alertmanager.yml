@@ -1,0 +1,43 @@
+global:
+  resolve_timeout: 5m
+
+route:
+  receiver: 'email'
+  group_by: ['alertname']
+  group_wait: 10s
+  group_interval: 5m
+  repeat_interval: 1h
+  routes:
+    - receiver: 'slack'
+      match:
+        severity: 'critical'
+    - receiver: 'web.hook'
+      match:
+        severity: 'warning'
+
+receivers:
+  - name: 'email'
+    email_configs:
+      - to: 'hieuboyfc@gmail.com'
+        send_resolved: true
+        smarthost: 'smtp.gmail.com:587'
+        auth_username: 'sicix.official@gmail.com'
+        auth_password: 'otis qkha ykgu tgxx'
+        require_tls: true
+
+  - name: 'slack'
+    slack_configs:
+      - api_url: 'https://hooks.slack.com/services/your/slack/webhook'
+        channel: '#alerts'
+        send_resolved: true
+
+  - name: 'web.hook'
+    webhook_configs:
+      - url: 'http://127.0.0.1:5001/'
+
+inhibit_rules:
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname', 'dev', 'instance']

@@ -1,11 +1,11 @@
 version: '3.8'
 
 services:
-  redis-6380:
+  redis_6380:
     image: redis:latest
-    container_name: redis-6380
+    container_name: redis_6380
     ports:
-      - "6380:6380"
+      - "6380:6379"
     volumes:
       - ./conf/redis-6380.conf:/usr/local/etc/redis/redis.conf
       - redis-data-6380:/data
@@ -13,11 +13,11 @@ services:
     networks:
       - redis-network
 
-  redis-6381:
+  redis_6381:
     image: redis:latest
-    container_name: redis-6381
+    container_name: redis_6381
     ports:
-      - "6381:6381"
+      - "6381:6379"
     volumes:
       - ./conf/redis-6381.conf:/usr/local/etc/redis/redis.conf
       - redis-data-6381:/data
@@ -25,11 +25,11 @@ services:
     networks:
       - redis-network
 
-  redis-6382:
+  redis_6382:
     image: redis:latest
-    container_name: redis-6382
+    container_name: redis_6382
     ports:
-      - "6382:6382"
+      - "6382:6379"
     volumes:
       - ./conf/redis-6382.conf:/usr/local/etc/redis/redis.conf
       - redis-data-6382:/data
@@ -37,11 +37,11 @@ services:
     networks:
       - redis-network
 
-  redis-6383:
+  redis_6383:
     image: redis:latest
-    container_name: redis-6383
+    container_name: redis_6383
     ports:
-      - "6383:6383"
+      - "6383:6379"
     volumes:
       - ./conf/redis-6383.conf:/usr/local/etc/redis/redis.conf
       - redis-data-6383:/data
@@ -49,11 +49,11 @@ services:
     networks:
       - redis-network
 
-  redis-6384:
+  redis_6384:
     image: redis:latest
-    container_name: redis-6384
+    container_name: redis_6384
     ports:
-      - "6384:6384"
+      - "6384:6379"
     volumes:
       - ./conf/redis-6384.conf:/usr/local/etc/redis/redis.conf
       - redis-data-6384:/data
@@ -61,15 +61,23 @@ services:
     networks:
       - redis-network
 
-  redis-6385:
+  redis_6385:
     image: redis:latest
-    container_name: redis-6385
+    container_name: redis_6385
     ports:
-      - "6385:6385"
+      - "6385:6379"
     volumes:
       - ./conf/redis-6385.conf:/usr/local/etc/redis/redis.conf
       - redis-data-6385:/data
     command: redis-server /usr/local/etc/redis/redis.conf
+    networks:
+      - redis-network
+
+  redis_insight:
+    image: redislabs/redisinsight:latest
+    container_name: redis_insight
+    ports:
+      - "8001:8001"
     networks:
       - redis-network
 

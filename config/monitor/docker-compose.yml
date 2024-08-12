@@ -15,7 +15,7 @@ services:
       - ./consul/loki-service.json:/consul/loki-service.json
       - ./consul/promtail-service.json:/consul/promtail-service.json
       - ./consul/my-service.json:/consul/my-service.json
-    command: ["/consul/start-consul-services.sh"]
+    command: [ "/consul/start-consul-services.sh" ]
     # command: ["consul", "agent", "-config-file=/consul/consul-config.json"]
     networks:
       - zimji-network
@@ -45,6 +45,45 @@ services:
       - C:/Users/ZimJi/Desktop/microservice_springboot/logs:/logs
       - ./promtail/promtail-config.yaml:/promtail/promtail-config.yaml
     command: -config.file=/promtail/promtail-config.yaml
+    networks:
+      - zimji-network
+    restart: unless-stopped
+
+  alertmanager:
+    image: prom/alertmanager:v0.27.0
+    container_name: alertmanager
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./alertmanager/alertmanager.yml:/alertmanager/alertmanager.yml
+    networks:
+      - zimji-network
+    restart: unless-stopped
+
+  redis_exporter:
+    image: oliver006/redis_exporter:v1.62.0
+    container_name: redis_exporter
+    ports:
+      - "9121:9121"
+    networks:
+      - zimji-network
+    command: >
+      --redis.addr=redis://redis_6380:6379
+      --redis.addr=redis://redis_6381:6379
+      --redis.addr=redis://redis_6382:6379
+      --redis.addr=redis://redis_6383:6379
+      --redis.addr=redis://redis_6384:6379
+      --redis.addr=redis://redis_6385:6379
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:v2.53.2
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/prometheus/prometheus.yml
+      - ./prometheus/alert.rules.yml:/prometheus/alert.rules.yml
     networks:
       - zimji-network
     restart: unless-stopped
