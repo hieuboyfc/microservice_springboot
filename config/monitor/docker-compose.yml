@@ -18,7 +18,7 @@ services:
     command: [ "/consul/start-consul-services.sh" ]
     # command: ["consul", "agent", "-config-file=/consul/consul-config.json"]
     networks:
-      - zimji-network
+      - monitor-network
     restart: unless-stopped
 
   loki:
@@ -33,7 +33,7 @@ services:
       - ./loki/loki-config.yaml:/loki/loki-config.yaml
     command: -config.expand-env=true -config.file=/loki/loki-config.yaml
     networks:
-      - zimji-network
+      - monitor-network
     restart: unless-stopped
 
   promtail:
@@ -48,7 +48,7 @@ services:
       - ./promtail/promtail-config.yaml:/promtail/promtail-config.yaml
     command: -config.file=/promtail/promtail-config.yaml
     networks:
-      - zimji-network
+      - monitor-network
     restart: unless-stopped
 
   alertmanager:
@@ -60,7 +60,7 @@ services:
       - ./alertmanager/alertmanager.yml:/alertmanager/alertmanager.yml
       - ./alertmanager/logs:/alertmanager/logs
     networks:
-      - zimji-network
+      - monitor-network
     restart: unless-stopped
 
   redis_exporter:
@@ -71,7 +71,8 @@ services:
     volumes:
       - ./redis_exporter/logs:/redis_exporter_logs
     networks:
-      - zimji-network
+      - monitor-network
+      - redis_redis-network
     command: >
       --redis.addr=redis://redis_6380:6380
       --redis.addr=redis://redis_6381:6381
@@ -91,7 +92,7 @@ services:
       - ./prometheus/alert.rules.yml:/prometheus/alert.rules.yml
       - ./prometheus/logs:/prometheus/logs
     networks:
-      - zimji-network
+      - monitor-network
     restart: unless-stopped
 
   grafana:
@@ -104,9 +105,11 @@ services:
       - ./grafana/logs:/var/log/grafana
       # - ./grafana/grafana-config.yaml:/etc/grafana/grafana.ini
     networks:
-      - zimji-network
+      - monitor-network
     restart: unless-stopped
 
 networks:
-  zimji-network:
+  monitor-network:
     driver: bridge
+  redis_redis-network:
+    external: true

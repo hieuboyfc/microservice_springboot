@@ -51,7 +51,7 @@ docker exec -it redis_6380 redis-cli --cluster create ^
   redis_6384:6384 ^
   redis_6385:6385 ^
   --cluster-replicas 1
-timeout /t 5 /nobreak > NUL
+timeout /t 8 /nobreak > NUL
 
 echo Redis Cluster setup complete.
 
