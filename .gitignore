@@ -1,5 +1,5 @@
 # Database
-# config/database/postgres/data
+config/database/postgres/data
 
 # Redis
 config/redis/data
