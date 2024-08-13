@@ -1,0 +1,35 @@
+===> Helm
+- CMD: helm list --all-namespaces
+- CMD: helm list --namespace microservice-springboot
+- CMD: helm install api-gateway ./ --namespace microservice-springboot --debug
+- CMD: helm upgrade api-gateway ./ --namespace microservice-springboot --debug
+- CMD: helm uninstall api-gateway --namespace microservice-springboot
+- CMD: helm status api-gateway --namespace microservice-springboot
+
+===> Kubectl
+- CMD: kubectl get namespaces
+- CMD: kubectl get all -n microservice-springboot
+
+- CMD: kubectl create namespace microservice-springboot
+- CMD: kubectl delete namespace microservice-springboot
+
+- CMD: kubectl apply -f deployment.yaml
+- CMD: kubectl apply -f service.yaml
+- CMD: kubectl apply -f networkpolicy.yaml
+
+- CMD: kubectl describe pod api-gateway -n microservice-springboot
+
+- CMD: kubectl get pods -n microservice-springboot
+- CMD: kubectl delete pod api-gateway -n microservice-springboot
+
+- CMD: kubectl get services -n microservice-springboot
+- CMD: kubectl delete service api-gateway -n microservice-springboot
+
+- CMD: kubectl get deployments -n microservice-springboot
+- CMD: kubectl delete deployment api-gateway -n microservice-springboot
+
+- CMD: kubectl get configmap -n microservice-springboot
+- CMD: kubectl delete configmap api-gateway -n microservice-springboot
+
+- CMD: kubectl get networkpolicy -n microservice-springboot
+- CMD: kubectl delete networkpolicy api-gateway-network-policy -n microservice-springboot

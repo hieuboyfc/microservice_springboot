@@ -11,4 +11,4 @@ spec:
       targetPort: {{ .Values.service.targetPort }}
       name: {{ .Values.service.name }}
   selector:
-    {{ - include "selectorLabels" . | nindent 6 }}
+    {{- include "selectorLabels" . | nindent 6 }}

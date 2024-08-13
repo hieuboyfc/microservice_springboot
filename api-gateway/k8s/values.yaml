@@ -1,4 +1,4 @@
-namespace: microservice_springboot
+namespace: microservice-springboot
 replicaCount: 1
 appName: api-gateway
 timezone: Asia/Ho_Chi_Minh
@@ -6,15 +6,15 @@ dateFormat: yyyy-MM-dd'T'HH:mm:ssZ
 apiKey: test
 
 image:
-  repository: your-registry/api-gateway
-  tag: latest
+  repository: hieuboyfc/api-gateway
+  tag: 1.0.0
   pullPolicy: IfNotPresent
 
 service:
   name: api-gateway
   type: LoadBalancer
   port: 80
-  targetPort: 1997
+  targetPort: 8080
 
 resources:
   requests:
@@ -34,7 +34,7 @@ hpa:
 config:
   application: |
     server:
-      port: 1997
+      port: 8080
 
 configMap:
   files:
