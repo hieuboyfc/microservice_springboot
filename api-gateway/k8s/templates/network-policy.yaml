@@ -1,8 +1,10 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ .Values.appName }}-network-policy
+  name: {{ .Values.appName }}
   namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "labels" . | nindent 4 }}
 spec:
   podSelector:
     matchLabels:

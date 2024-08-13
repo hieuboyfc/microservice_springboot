@@ -1,4 +1,8 @@
+===> CMD: C:\Users\ZimJi\Desktop\microservice_springboot\api-gateway\k8s>
+
 ===> Helm
+- CMD: helm create api-gateway
+- CMD: helm lint | helm lint api-gateway
 - CMD: helm list --all-namespaces
 - CMD: helm list --namespace microservice-springboot
 - CMD: helm install api-gateway ./ --namespace microservice-springboot --debug
@@ -13,9 +17,12 @@
 - CMD: kubectl create namespace microservice-springboot
 - CMD: kubectl delete namespace microservice-springboot
 
-- CMD: kubectl apply -f deployment.yaml
+- CMD: kubectl apply -f configmap.yaml
+- CMD: kubectl apply -f secrets.yaml
+- CMD: kubectl apply -f network-policy.yaml
 - CMD: kubectl apply -f service.yaml
-- CMD: kubectl apply -f networkpolicy.yaml
+- CMD: kubectl apply -f deployment.yaml
+- CMD: kubectl apply -f hpa.yaml
 
 - CMD: kubectl describe pod api-gateway -n microservice-springboot
 
@@ -33,3 +40,5 @@
 
 - CMD: kubectl get networkpolicy -n microservice-springboot
 - CMD: kubectl delete networkpolicy api-gateway-network-policy -n microservice-springboot
+
+- CMD: kubectl logs api-gateway-569777777-sdcpj -c api-gateway -n microservice-springboot

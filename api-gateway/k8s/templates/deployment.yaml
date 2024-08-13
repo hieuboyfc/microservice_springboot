@@ -52,6 +52,9 @@ spec:
             limits:
               memory: "1Gi"
               cpu: "1"
+          securityContext:
+            runAsNonRoot: false
+            allowPrivilegeEscalation: false
       volumes:
         - name: {{ .Values.configMap.files.application.name }}
           configMap:
@@ -59,3 +62,10 @@ spec:
             items:
               - key: {{ .Values.configMap.files.application.key }}
                 path: {{ .Values.configMap.files.application.subPath }}
+      nodeSelector:
+        kubernetes.io/os: linux  # Chọn node theo hệ điều hành, ví dụ
+      tolerations:
+        - key: "key"
+          operator: "Equal"
+          value: "value"
+          effect: "NoSchedule"

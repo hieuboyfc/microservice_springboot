@@ -2,6 +2,7 @@ apiVersion: v2
 name: api-gateway
 description: Quản lý Gateway
 home: https://hieuboyfc.com
+icon: https://hieuboyfc.com
 keywords:
   - zimji
 maintainers:
