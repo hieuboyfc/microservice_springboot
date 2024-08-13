@@ -1,3 +1,6 @@
+# IDE
+.idea
+
 # Database
 config/database/postgres/data
 
