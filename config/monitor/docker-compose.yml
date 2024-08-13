@@ -11,11 +11,11 @@ services:
       - ./consul/data:/consul/data
       - ./consul/logs:/consul/logs
       - ./consul/consul-config.json:/consul/consul-config.json
-      - ./consul/start-consul-services.sh:/consul/start-consul-services.sh
       - ./consul/loki-service.json:/consul/loki-service.json
       - ./consul/promtail-service.json:/consul/promtail-service.json
       - ./consul/my-service.json:/consul/my-service.json
-    command: [ "/consul/start-consul-services.sh" ]
+      - ./consul/start-consul.sh:/consul/start-consul.sh
+    entrypoint: [ "/consul/start-consul.sh" ]
     # command: ["consul", "agent", "-config-file=/consul/consul-config.json"]
     networks:
       - monitor-network
