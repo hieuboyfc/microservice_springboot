@@ -26,6 +26,18 @@
 
 - CMD: kubectl describe pod api-gateway -n microservice-springboot
 
+- CMD: kubectl get pods -o wide -n microservice-springboot
+- CMD: kubectl get svc -o wide -n microservice-springboot
+- CMD: kubectl get nodes -o wide -n microservice-springboot
+
+- CMD: kubectl expose svc api-gateway --type=NodePort --name=api-gateway-nodeport -n microservice-springboot
+- CMD: kubectl get svc api-gateway-nodeport -n microservice-springboot
+
+- CMD: kubectl expose svc api-gateway --type=LoadBalancer --name=api-gateway-loadbalancer -n microservice-springboot
+- CMD: kubectl get svc api-gateway-loadbalancer -n microservice-springboot
+
+- CMD: kubectl get endpoints api-gateway -n microservice-springboot
+
 - CMD: kubectl get pods -n microservice-springboot
 - CMD: kubectl delete pod api-gateway -n microservice-springboot
 
@@ -42,3 +54,5 @@
 - CMD: kubectl delete networkpolicy api-gateway-network-policy -n microservice-springboot
 
 - CMD: kubectl logs api-gateway-569777777-sdcpj -c api-gateway -n microservice-springboot
+
+- CMD: kubectl port-forward svc/api-gateway-nodeport 1997:1997 -n microservice-springboot

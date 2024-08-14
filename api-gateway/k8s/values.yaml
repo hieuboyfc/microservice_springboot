@@ -26,7 +26,7 @@ container:
   port: 1997
   image:
     repository: hieuboyfc/api-gateway
-    pullPolicy: Always
+    pullPolicy: IfNotPresent # Always
     tag: "1.0.0"
   livenessProbe: |
     failureThreshold: 3
