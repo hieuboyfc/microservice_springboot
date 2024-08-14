@@ -2,28 +2,10 @@ namespace: microservice-springboot
 replicaCount: 1  # Số lượng pod triển khai
 
 appName: api-gateway
+instance: hieuboy
 timezone: Asia/Ho_Chi_Minh
 dateFormat: yyyy-MM-dd'T'HH:mm:ssZ
 apiKey: test
-
-image:
-  repository: hieuboyfc/api-gateway
-  tag: 1.0.0
-  pullPolicy: IfNotPresent
-
-service:
-  name: api-gateway
-  type: LoadBalancer
-  port: 80
-  targetPort: 1997
-
-resources:
-  requests:
-    memory: "512Mi"
-    cpu: "500m"
-  limits:
-    memory: "1Gi"
-    cpu: "1"
 
 hpa:
   enabled: true
@@ -35,8 +17,43 @@ hpa:
 config:
   application: {}
 
+service:
+  name: tcp
+  type: ClusterIP
+  port: 1997
+
+container:
+  port: 1997
+  image:
+    repository: hieuboyfc/api-gateway
+    pullPolicy: Always
+    tag: "1.0.0"
+  livenessProbe: |
+    failureThreshold: 3
+    initialDelaySeconds: 30
+    periodSeconds: 2
+    successThreshold: 1
+    tcpSocket:
+      port: {{ .Values.service.port }}
+    timeoutSeconds: 2
+  readinessProbe: |
+    failureThreshold: 3
+    initialDelaySeconds: 30
+    periodSeconds: 2
+    successThreshold: 2
+    tcpSocket:
+      port: {{ .Values.service.port }}
+    timeoutSeconds: 2
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "500m"
+    limits:
+      memory: "1Gi"
+      cpu: "1"
+
 configMap:
-  location: {}
+  location: /config/
   files:
     application:
       enable: true
@@ -50,6 +67,7 @@ database:
   name: HieuBoy
   address: localhost
   port: 5432
+  schema: api-gateway
   username: zimji
   password: dmlwLmhpZXVib3k
 
@@ -58,43 +76,44 @@ nameOverride: ""
 fullnameOverride: ""
 
 serviceAccount:
+  # Specifies whether a service account should be created
   create: true
+  # Automatically mount a ServiceAccount's API credentials?
   automount: true
+  # Annotations to add to the service account
   annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
   name: ""
 
 podAnnotations: {}
-podLabels: {}
 
-podSecurityContext:
-  runAsNonRoot: false
-  allowPrivilegeEscalation: false
+podSecurityContext: {}
+# fsGroup: 2000
 
-securityContext:
-  runAsUser: 1000
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+# readOnlyRootFilesystem: true
+# runAsNonRoot: true
+# runAsUser: 1000
 
 autoscaling:
-  enabled: true
+  enabled: false
   minReplicas: 1
   maxReplicas: 5
   targetCPUUtilizationPercentage: 75
   targetMemoryUtilizationPercentage: 90
 
-podAntiAffinity:
-  enabled: true
-
-nodeSelector:
-  kubernetes.io/os: linux
-
-tolerations: []
+nodeSelector: {}
 
 affinity:
+  enabled: true
   podAntiAffinity:
-    preferredDuringSchedulingIgnoredDuringExecution:
-      - weight: 1
-        preference:
-          matchExpressions:
-            - key: kubernetes.io/election
-              operator: In
-              values:
-                - true
+    preferred: true
+
+tolerations:
+  - key: "key"
+    operator: "Exists"
+    effect: "NoSchedule"

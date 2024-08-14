@@ -10,7 +10,7 @@ spec:
   ports:
     - protocol: TCP
       port: {{ .Values.service.port }}
-      targetPort: {{ .Values.service.targetPort }}
+      targetPort: {{ .Values.container.port }}
       name: {{ .Values.service.name }}
   selector:
     {{- include "selectorLabels" . | nindent 6 }}

@@ -6,66 +6,100 @@ metadata:
   labels:
     {{- include "labels" . | nindent 6 }}
 spec:
+  {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
+  {{- end }}
+
   selector:
     matchLabels:
       {{- include "selectorLabels" . | nindent 6 }}
+
   template:
     metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
       labels:
         {{- include "labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+
     spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+
       containers:
         - name: {{ .Values.appName }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.container.image.repository }}:{{ .Values.container.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.container.image.pullPolicy }}
           ports:
             - name: {{ .Values.service.name }}
-              containerPort: {{ .Values.service.targetPort }}
+              containerPort: {{ .Values.service.port }}
               protocol: TCP
           envFrom:
             - configMapRef:
                 name: generic-config
             - secretRef:
                 name: db-config
+
+          {{- with .Values.container.livenessProbe }}
+          livenessProbe:
+          {{- tpl . $ | nindent 12 }}
+          {{- end }}
+
+          {{- with .Values.container.readinessProbe }}
+          readinessProbe:
+          {{- tpl . $ | nindent 12 }}
+          {{- end }}
+
+          resources:
+            {{- toYaml .Values.container.resources | nindent 12 }}
+
+          {{- if .Values.configMap.files.application.enable }}
           volumeMounts:
             - name: {{ .Values.configMap.files.application.name }}
               readOnly: true
               mountPath: {{ .Values.configMap.files.application.mountPath }}
               subPath: {{ .Values.configMap.files.application.subPath }}
-          livenessProbe:
-            httpGet:
-              path: /actuator/health
-              port: {{ .Values.service.targetPort }}
-            initialDelaySeconds: 60
-            periodSeconds: 30
-          readinessProbe:
-            httpGet:
-              path: /actuator/health
-              port: {{ .Values.service.targetPort }}
-            initialDelaySeconds: 30
-            periodSeconds: 15
-          resources:
-            requests:
-              memory: "512Mi"
-              cpu: "500m"
-            limits:
-              memory: "1Gi"
-              cpu: "1"
-          securityContext:
-            runAsNonRoot: false
-            allowPrivilegeEscalation: false
+          {{- end }}
+
+      {{- if .Values.configMap.files.application.enable }}
       volumes:
-        - name: {{ .Values.configMap.files.application.name }}
+        - name: {{.Values.configMap.files.application.name}}
           configMap:
-            name: {{ .Values.configMap.files.application.name }}
-            items:
-              - key: {{ .Values.configMap.files.application.key }}
-                path: {{ .Values.configMap.files.application.subPath }}
+            defaultMode: 0644
+            name: {{.Values.configMap.files.application.name}}
+      {{- end }}
+
+      {{- with .Values.nodeSelector }}
       nodeSelector:
-        kubernetes.io/os: linux  # Chọn node theo hệ điều hành, ví dụ
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app.zimji.vn/name
+                      operator: In
+                      values:
+                        - {{ .Values.appName }}
+                topologyKey: kubernetes.io/hostname
+              weight: 100
+
+      {{- with .Values.tolerations }}
       tolerations:
-        - key: "key"
-          operator: "Equal"
-          value: "value"
-          effect: "NoSchedule"
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
