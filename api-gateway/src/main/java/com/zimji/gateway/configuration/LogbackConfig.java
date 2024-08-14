@@ -27,11 +27,11 @@ public class LogbackConfig {
     private void configure() {
         LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
 
-        // Console Appender for common log
+        // Console Appender for Common Log
         ConsoleAppender<ILoggingEvent> consoleAppender = createConsoleAppender(loggerContext);
         loggerContext.getLogger(Logger.ROOT_LOGGER_NAME).addAppender(consoleAppender);
 
-        // File Appender for common log
+        // File Appender for Common Log
         RollingFileAppender<ILoggingEvent> fileAppender = createRollingFileAppender(loggerContext, FILE_NAME);
         loggerContext.getLogger(Logger.ROOT_LOGGER_NAME).addAppender(fileAppender);
 
@@ -77,7 +77,7 @@ public class LogbackConfig {
                                                                                    RollingFileAppender<ILoggingEvent> fileAppender,
                                                                                    String fileName) {
         // Get package name
-        String fileLog = "logs/%d{yyyy-MM-dd}/" + fileName.toLowerCase() + ".log";
+        String fileLog = "api-gateway/logs/%d{yyyy-MM-dd}/" + fileName.toLowerCase() + ".log";
 
         TimeBasedRollingPolicy<ILoggingEvent> rollingPolicy = new TimeBasedRollingPolicy<>();
         rollingPolicy.setFileNamePattern(fileLog);
