@@ -8,19 +8,19 @@ questions:
     options: ["1.0.0", "1.0.1", "1.0.2"]
     required: true
     label: Api Version
-    group: "global Settings"
+    group: "Global Settings"
   - variable: replicaCount
     description: "Replicas"
     type: int
     default: 1
     required: true
     label: Api Version
-    group: "global Settings"
+    group: "Global Settings"
   - variable: configMap.files.application.enable
     description: "Enable application config"
     type: boolean
     default: true
     required: true
     label: Enable application config
-    group: "global Settings"
+    group: "Global Settings"
 

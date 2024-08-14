@@ -33,6 +33,7 @@
 - CMD: kubectl expose svc api-gateway --type=NodePort --name=api-gateway-nodeport -n microservice-springboot
 - CMD: kubectl get svc api-gateway-nodeport -n microservice-springboot
 - CMD: kubectl port-forward svc/api-gateway-nodeport 1997:1997 -n microservice-springboot
+- CMD: kubectl port-forward svc/api-gateway-nodeport 1234:1997 -n microservice-springboot
 
 - CMD: kubectl expose svc api-gateway --type=LoadBalancer --name=api-gateway-loadbalancer -n microservice-springboot
 - CMD: kubectl get svc api-gateway-loadbalancer -n microservice-springboot
