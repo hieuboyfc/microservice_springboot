@@ -38,6 +38,7 @@
     <!-- Root Logger -->
     <root level="INFO">
         <appender-ref ref="CONSOLE_FILE"/>
+        <appender-ref ref="GATEWAY_FILE"/>
         <appender-ref ref="LOKI_FILE"/>
     </root>
 
