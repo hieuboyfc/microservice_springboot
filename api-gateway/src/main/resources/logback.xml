@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- Console Appender -->
+    <appender name="CONSOLE_FILE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy/MM/dd - HH:mm:ss.SSS} [%thread] %-5level %logger{36} --- %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- File Appender -->
+    <appender name="GATEWAY_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!--<file>api-gateway/logs/%d{yyyy-MM-dd}/gateway.log</file>-->
+        <encoder>
+            <pattern>%d{yyyy/MM/dd - HH:mm:ss.SSS} [%thread] %-5level %logger{36} ___ %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>api-gateway/logs/%d{yyyy-MM-dd}/gateway.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>10GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <!-- Loki Appender -->
+    <appender name="LOKI_FILE" class="com.github.loki4j.logback.Loki4jAppender">
+        <url>http://loki:3100/loki/api/v1/push</url>
+        <logStream>
+            <stream name="api-gateway"/>
+        </logStream>
+        <encoder>
+            <pattern>%d{yyyy/MM/dd - HH:mm:ss.SSS} [%thread] %-5level %logger{36} --- %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- Root Logger -->
+    <root level="INFO">
+        <appender-ref ref="LOKI_FILE"/>
+    </root>
+
+</configuration>

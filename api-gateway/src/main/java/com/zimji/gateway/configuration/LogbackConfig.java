@@ -1,3 +1,4 @@
+/*
 package com.zimji.gateway.configuration;
 
 import ch.qos.logback.classic.Level;
@@ -90,3 +91,4 @@ public class LogbackConfig {
     }
 
 }
+*/
