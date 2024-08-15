@@ -25,14 +25,21 @@
 
     <!-- Loki Appender -->
     <appender name="LOKI_FILE" class="com.github.loki4j.logback.Loki4jAppender">
-        <url>http://loki:3100/loki/api/v1/push</url>
+        <http>
+            <url>http://192.168.1.64:3100/loki/api/v1/push</url>
+        </http>
+        <format>
+            <label>
+                <pattern>app=api-gateway,host=${HOSTNAME}</pattern>
+            </label>
+            <message>
+                <pattern>%d{yyyy/MM/dd - HH:mm:ss.SSS} [%thread] %-5level %logger{36} --- %msg%n</pattern>
+                <charset>UTF-8</charset>
+            </message>
+        </format>
         <logStream>
             <stream name="api-gateway"/>
         </logStream>
-        <encoder class="com.github.loki4j.logback.JsonEncoder">
-            <pattern>%d{yyyy/MM/dd - HH:mm:ss.SSS} [%thread] %-5level %logger{36} --- %msg%n</pattern>
-            <charset>UTF-8</charset>
-        </encoder>
     </appender>
 
     <!-- Root Logger -->
