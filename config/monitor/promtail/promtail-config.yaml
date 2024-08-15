@@ -15,7 +15,7 @@ scrape_configs:
           - localhost
         labels:
           job: log_system
-          __path__: /logs/**/*.log
+          __path__: /api-gateway/logs/**/*.log
     pipeline_stages:
       - regex:
           expression: '^(?P<timestamp>\S+ \S+) (?P<level>\S+) (?P<message>.*)'
@@ -33,7 +33,7 @@ scrape_configs:
           - localhost
         labels:
           job: log_api_gateway
-          __path__: /logs/**/*.log
+          __path__: /api-gateway/logs/**/*.log
     pipeline_stages:
       - json:
           expressions:

@@ -29,7 +29,7 @@
         <logStream>
             <stream name="api-gateway"/>
         </logStream>
-        <encoder>
+        <encoder class="com.github.loki4j.logback.JsonEncoder">
             <pattern>%d{yyyy/MM/dd - HH:mm:ss.SSS} [%thread] %-5level %logger{36} --- %msg%n</pattern>
             <charset>UTF-8</charset>
         </encoder>
@@ -37,6 +37,7 @@
 
     <!-- Root Logger -->
     <root level="INFO">
+        <appender-ref ref="CONSOLE_FILE"/>
         <appender-ref ref="LOKI_FILE"/>
     </root>
 
