@@ -1,10 +1,10 @@
 {{/*
-Define a common set of labels for selecting resources.
+Define labels for pod selectors.
 */}}
 {{- define "selectorLabels" -}}
 app.zimji.vn/name: {{ .Values.appName }}
-app.zimji.vn/instance:  {{ .Values.instance }}
-{{- end -}}
+app.zimji.vn/instance: {{ .Values.instance }}
+{{- end }}
 
 {{/*
 Define a set of common labels for resources.
@@ -15,4 +15,4 @@ Define a set of common labels for resources.
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Values.instance }}
-{{- end -}}
+{{- end }}

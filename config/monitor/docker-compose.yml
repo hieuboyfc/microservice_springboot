@@ -110,6 +110,8 @@ services:
 
 networks:
   monitor-network:
+    name: monitor-network
     driver: bridge
-  redis_redis-network:
+  redis-network:
+    name: redis-network
     external: true

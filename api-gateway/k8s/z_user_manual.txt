@@ -17,12 +17,12 @@
 - CMD: kubectl create namespace microservice-springboot
 - CMD: kubectl delete namespace microservice-springboot
 
-- CMD: kubectl apply -f configmap.yaml
-- CMD: kubectl apply -f secrets.yaml
-- CMD: kubectl apply -f network-policy.yaml
-- CMD: kubectl apply -f service.yaml
-- CMD: kubectl apply -f deployment.yaml
-- CMD: kubectl apply -f hpa.yaml
+- CMD: kubectl apply -f ./templates/configmap.yaml
+- CMD: kubectl apply -f ./templates/secrets.yaml
+- CMD: kubectl apply -f ./templates/network-policy.yaml
+- CMD: kubectl apply -f ./templates/service.yaml
+- CMD: kubectl apply -f ./templates/deployment.yaml
+- CMD: kubectl apply -f ./templates/hpa.yaml
 
 - CMD: kubectl describe pod api-gateway -n microservice-springboot
 

@@ -1,7 +1,7 @@
 {{- $files := .Files }}
 {{- $namespace := .Values.namespace }}
 {{- range $key,$value := .Values.configMap.files }}
-
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:

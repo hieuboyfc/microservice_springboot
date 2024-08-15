@@ -4,6 +4,9 @@
 # Database
 config/database/postgres/data
 
+# Kong
+config/kong/data
+
 # Redis
 config/redis/data
 

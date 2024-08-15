@@ -19,8 +19,9 @@ config:
 
 service:
   name: tcp
-  type: ClusterIP
+  type: NodePort # ClusterIP, LoadBalancer
   port: 1997
+  nodePort: 30001
 
 container:
   port: 1997
@@ -70,6 +71,13 @@ database:
   schema: api-gateway
   username: zimji
   password: dmlwLmhpZXVib3k
+
+ingress:
+  enabled: false
+  host: app.zimji.vn
+  nginx:
+    rewriteTarget: /
+  tls: true
 
 imagePullSecrets: []
 nameOverride: ""
