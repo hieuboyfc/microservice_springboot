@@ -2,6 +2,7 @@
 Define labels for pod selectors.
 */}}
 {{- define "selectorLabels" -}}
+app: {{ .Values.appName }}
 app.zimji.vn/name: {{ .Values.appName }}
 app.zimji.vn/instance: {{ .Values.instance }}
 {{- end }}

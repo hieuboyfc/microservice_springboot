@@ -9,6 +9,8 @@
 - CMD: helm upgrade api-gateway ./ --namespace microservice-springboot --debug
 - CMD: helm uninstall api-gateway --namespace microservice-springboot
 - CMD: helm status api-gateway --namespace microservice-springboot
+- CMD: helm template api-gateway ./ --values ./values.yaml
+- CMD: helm template api-gateway ./ --values ./values.yaml > output.yaml
 
 ===> Kubectl
 - CMD: kubectl get namespaces
@@ -17,14 +19,9 @@
 - CMD: kubectl create namespace microservice-springboot
 - CMD: kubectl delete namespace microservice-springboot
 
-- CMD: kubectl apply -f ./templates/configmap.yaml
-- CMD: kubectl apply -f ./templates/secrets.yaml
-- CMD: kubectl apply -f ./templates/network-policy.yaml
-- CMD: kubectl apply -f ./templates/service.yaml
-- CMD: kubectl apply -f ./templates/deployment.yaml
-- CMD: kubectl apply -f ./templates/hpa.yaml
-
 - CMD: kubectl describe pod api-gateway -n microservice-springboot
+- CMD: kubectl describe svc api-gateway -n microservice-springboot
+- CMD: kubectl describe node api-gateway -n microservice-springboot
 
 - CMD: kubectl get pods -o wide -n microservice-springboot
 - CMD: kubectl get svc -o wide -n microservice-springboot
@@ -43,16 +40,46 @@
 - CMD: kubectl get pods -n microservice-springboot
 - CMD: kubectl delete pod api-gateway -n microservice-springboot
 
-- CMD: kubectl get services -n microservice-springboot
-- CMD: kubectl delete service api-gateway -n microservice-springboot
-
+- CMD: kubectl create -f ./templates/deployment.yaml --save-config
+- CMD: kubectl apply -f ./templates/deployment.yaml
 - CMD: kubectl get deployments -n microservice-springboot
 - CMD: kubectl delete deployment api-gateway -n microservice-springboot
 
+- CMD: kubectl create -f ./templates/config-map.yaml --save-config
+- CMD: kubectl apply -f ./templates/config-map.yaml
 - CMD: kubectl get configmap -n microservice-springboot
 - CMD: kubectl delete configmap api-gateway -n microservice-springboot
 
+- CMD: kubectl create -f ./templates/hpa.yaml --save-config
+- CMD: kubectl apply -f ./templates/hpa.yaml
+- CMD: kubectl get hpa -n microservice-springboot
+- CMD: kubectl delete hpa api-gateway-hpa -n microservice-springboot
+
+- CMD: kubectl create -f ./templates/network-policy.yaml --save-config
+- CMD: kubectl apply -f ./templates/network-policy.yaml
 - CMD: kubectl get networkpolicy -n microservice-springboot
 - CMD: kubectl delete networkpolicy api-gateway-network-policy -n microservice-springboot
+
+- CMD: kubectl create -f ./templates/secrets.yaml --save-config
+- CMD: kubectl apply -f ./templates/secrets.yaml
+- CMD: kubectl get secret -n microservice-springboot
+- CMD: kubectl delete secret db-config -n microservice-springboot
+
+- CMD: kubectl create -f ./templates/service.yaml --save-config
+- CMD: kubectl apply -f ./templates/service.yaml
+- CMD: kubectl get services -n microservice-springboot
+- CMD: kubectl delete service api-gateway -n microservice-springboot
+
+- CMD: kubectl create -f ./templates/service-account.yaml --save-config
+- CMD: kubectl apply -f ./templates/service-account.yaml
+- CMD: kubectl get serviceaccounts -n microservice-springboot
+- CMD: kubectl delete serviceaccounts api-gateway -n microservice-springboot
+
+- CMD: kubectl create -f ./templates/ingress.yaml --save-config
+- CMD: kubectl apply -f ./templates/ingress.yaml
+- CMD: kubectl get ingress -n microservice-springboot
+- CMD: kubectl delete ingress api-gateway -n microservice-springboot
+
+- CMD: kubectl get events -n microservice-springboot
 
 - CMD: kubectl logs api-gateway-569777777-sdcpj -c api-gateway -n microservice-springboot

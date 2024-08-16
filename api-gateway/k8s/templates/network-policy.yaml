@@ -12,10 +12,10 @@ spec:
   ingress:
     - ports:
         - port: {{ .Values.service.port }}
-          protocol: TCP
+          protocol: {{ .Values.service.protocol }}
   egress:
     - to:
         - namespaceSelector: {}
       ports:
         - port: 443
-          protocol: TCP
+          protocol: {{ .Values.service.protocol }}

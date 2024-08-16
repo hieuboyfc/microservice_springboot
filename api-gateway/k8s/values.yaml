@@ -18,6 +18,7 @@ config:
   application: {}
 
 service:
+  protocol: TCP
   name: tcp
   type: NodePort # ClusterIP, LoadBalancer
   port: 1997
