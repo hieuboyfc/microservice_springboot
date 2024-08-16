@@ -1,26 +1,31 @@
 categories:
   - service
+
 questions:
   - variable: container.image.tag
-    description: "API-Gateway"
+    description: "API-Gateway Version"
     type: enum
     default: "1.0.0"
-    options: ["1.0.0", "1.0.1", "1.0.2"]
+    options:
+      - "1.0.0"
+      - "1.0.1"
+      - "1.0.2"
     required: true
-    label: Api Version
-    group: "Global Settings"
-  - variable: replicaCount
-    description: "Replicas"
-    type: int
-    default: 1
-    required: true
-    label: Api Version
-    group: "Global Settings"
-  - variable: configMap.files.application.enable
-    description: "Enable application config"
-    type: boolean
-    default: true
-    required: true
-    label: Enable application config
+    label: API Version
     group: "Global Settings"
 
+  - variable: replicaCount
+    description: "Number of replicas"
+    type: int
+    default: "1"
+    required: true
+    label: Replica Count
+    group: "Global Settings"
+
+  - variable: configMap.files.application.enable
+    description: "Enable application configuration"
+    type: boolean
+    default: "true"
+    required: true
+    label: Enable Application Config
+    group: "Global Settings"
