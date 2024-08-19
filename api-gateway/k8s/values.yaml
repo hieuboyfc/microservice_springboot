@@ -2,7 +2,7 @@ namespace: microservice-springboot
 replicaCount: 1  # Số lượng pod triển khai
 
 appName: api-gateway
-instance: hieuboy
+instance: zimji
 timezone: Asia/Ho_Chi_Minh
 dateFormat: yyyy-MM-dd'T'HH:mm:ssZ
 apiKey: test
@@ -19,8 +19,8 @@ config:
 
 service:
   protocol: TCP
-  name: tcp
-  type: NodePort # ClusterIP, LoadBalancer
+  name: http
+  type: ClusterIP # ClusterIP, LoadBalancer, NodePort
   port: 1997
   nodePort: 30001
 
@@ -74,9 +74,11 @@ database:
   password: dmlwLmhpZXVib3k
 
 ingress:
-  enabled: false
-  host: app.zimji.vn
+  enabled: true
+  className: "nginx"
+  host: hieuboy-zimji.com
   nginx:
+    image: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:latest
     rewriteTarget: /
   tls: true
 

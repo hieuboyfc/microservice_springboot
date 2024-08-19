@@ -8,10 +8,10 @@ metadata:
 spec:
   type: {{ .Values.service.type }}
   ports:
-    - protocol: {{ .Values.service.protocol }}
-      name: {{ .Values.service.name }}
-      port: {{ .Values.service.port }} # Cổng dịch vụ nội bộ
+    - port: {{ .Values.service.port }} # Cổng dịch vụ nội bộ
       targetPort: {{ .Values.service.port }} # Cổng của container
-      nodePort: {{ .Values.service.nodePort }} # Cổng NodePort (có thể chọn từ 30000-32767)
+      # nodePort: {{ .Values.service.nodePort }} # Cổng NodePort (có thể chọn từ 30000-32767)
+      protocol: {{ .Values.service.protocol }}
+      name: {{ .Values.service.name }}
   selector:
     {{- include "selectorLabels" . | nindent 6 }}

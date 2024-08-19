@@ -45,7 +45,7 @@ spec:
           ports:
             - name: {{ .Values.service.name }}
               containerPort: {{ .Values.service.port }}
-              protocol: TCP
+              protocol: {{ .Values.service.protocol }}
           envFrom:
             - configMapRef:
                 name: generic-config
