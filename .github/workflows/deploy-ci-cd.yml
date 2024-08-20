@@ -28,8 +28,13 @@ jobs:
       - name: List files
         run: ls -la
 
-      - name: Make gradlew executable
-        run: chmod +x ./microservice_springboot/gradlew
+      - name: Make gradlew executable for api-gateway
+        run: chmod +x ./microservice_springboot/api-gateway/gradlew
+        if: contains(github.event.head_commit.message, 'api-gateway')
+
+      - name: Make gradlew executable for auth-service
+        run: chmod +x ./microservice_springboot/auth-service/gradlew
+        if: contains(github.event.head_commit.message, 'auth-service')
 
       - name: Determine changed services
         id: changed-services
