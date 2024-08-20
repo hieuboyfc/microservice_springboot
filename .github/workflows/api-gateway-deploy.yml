@@ -43,9 +43,14 @@ jobs:
           echo "Contents of api-gateway directory:"
           ls -la api-gateway
 
-      - name: Make gradlew executable for api-gateway
-        run: chmod +x ./api-gateway/gradlew
-        if: contains(github.event.head_commit.message, 'api-gateway')
+      - name: Make gradlew executable
+        run: chmod +x api-gateway/gradlew
+
+      - name: Verify gradlew permissions
+        run: ls -la api-gateway/gradlew
+
+      - name: Verify gradlew file type
+        run: file api-gateway/gradlew
 
       - name: Determine changed services
         id: changed-services
