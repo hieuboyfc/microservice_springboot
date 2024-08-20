@@ -144,10 +144,10 @@ jobs:
           # Deploy api-gateway if there are changes
           if echo "$CHANGED_SERVICES" | grep -q 'api-gateway'; then
             echo "Deploying api-gateway to $ENVIRONMENT environment"
-            helm upgrade --install api-gateway ./microservice_springboot/api-gateway/k8s \
+            helm upgrade --install api-gateway ./api-gateway/k8s \
               --namespace ${{ secrets.KUBE_NAMESPACE }} \
-              --values ./microservice_springboot/api-gateway/k8s/values.yaml \
-              --values ./microservice_springboot/api-gateway/k8s/values-${env.ENVIRONMENT}.yaml \
+              --values ./api-gateway/k8s/values.yaml \
+              --values ./api-gateway/k8s/values-${env.ENVIRONMENT}.yaml \
               --set image.tag=${env.IMAGE_TAG}
           fi
 
