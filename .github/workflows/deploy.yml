@@ -61,6 +61,7 @@ jobs:
       - name: Trigger api-gateway CI/CD
         if: contains(env.CHANGED_SERVICES, 'api-gateway')
         run: |
+          echo GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
           curl -X POST -H "Authorization: token ${{ secrets.GIT_TOKEN }}" \
           -d '{"ref": "${{ github.ref }}"}' \
           https://api.github.com/repos/${{ github.repository }}/actions/workflows/api-gateway.yml/dispatches
@@ -68,6 +69,7 @@ jobs:
       - name: Trigger auth-service CI/CD
         if: contains(env.CHANGED_SERVICES, 'auth-service')
         run: |
+          echo GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
           curl -X POST -H "Authorization: token ${{ secrets.GIT_TOKEN }}" \
           -d '{"ref": "${{ github.ref }}"}' \
           https://api.github.com/repos/${{ github.repository }}/actions/workflows/auth-service.yml/dispatches
