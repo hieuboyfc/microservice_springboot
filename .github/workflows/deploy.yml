@@ -12,14 +12,27 @@ on:
       - qas
       - prod
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   detect-changes:
     runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
           fetch-depth: 2
+
+      - name: Use GITHUB_TOKEN
+        run: |
+          echo "Using GITHUB_TOKEN"
+          curl -H "Authorization: token ${{ env.GITHUB_TOKEN }}" \
+               -H "Accept: application/vnd.github.v3+json" \
+               https://api.github.com/user
 
       - name: Set up Git
         run: |
@@ -62,10 +75,10 @@ jobs:
         if: contains(env.CHANGED_SERVICES, 'api-gateway')
         run: |
           echo "Triggering api-gateway CI/CD workflow"
-          echo GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          echo GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
           
           curl -X POST \
-          -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          -H "Authorization: token ${{ env.GITHUB_TOKEN }}" \
           -H "Accept: application/vnd.github.v3+json" \
           -d '{"ref": "${{ github.ref }}"}' \
           https://api.github.com/repos/${{ github.repository }}/actions/workflows/113182959/dispatches
@@ -74,7 +87,10 @@ jobs:
         if: contains(env.CHANGED_SERVICES, 'auth-service')
         run: |
           echo "Triggering auth-service CI/CD workflow"
-          echo GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          curl -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          echo GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
+          
+          curl -X POST \
+          -H "Authorization: token ${{ env.GITHUB_TOKEN }}" \
+          -H "Accept: application/vnd.github.v3+json" \
           -d '{"ref": "${{ github.ref }}"}' \
-          https://api.github.com/repos/${{ github.repository }}/actions/workflows/auth-service.yml/dispatches
+          https://api.github.com/repos/${{ github.repository }}/actions/workflows/deploy-ci-cd.yml/dispatches
