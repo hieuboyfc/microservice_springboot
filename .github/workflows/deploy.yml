@@ -12,13 +12,14 @@ on:
       - qas
       - prod
 
-permissions:
-  contents: write
-  pull-requests: write
-
 jobs:
-  detect-changes:
+  multi-pipeline:
+    name: CI/CD Main Pipeline
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      repository-projects: write
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
