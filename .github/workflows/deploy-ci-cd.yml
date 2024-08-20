@@ -25,8 +25,12 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
+      - name: List files
+        run: ls -la
+
       - name: Build with Gradle
         run: ./gradlew build
+        working-directory: ./microservice_springboot
 
       - name: Build and push Docker images
         env:
