@@ -47,6 +47,10 @@ jobs:
         run: chmod +x api-gateway/gradlew
         if: contains(github.event.head_commit.message, 'api-gateway')
 
+      - name: Make gradlew executable for api-gateway
+        run: chmod +x ./microservice_springboot/api-gateway/gradlew
+        if: contains(github.event.head_commit.message, 'api-gateway')
+
       - name: Determine changed services
         id: changed-services
         run: |
@@ -75,7 +79,7 @@ jobs:
           # Build and push Docker image for api-gateway if there are changes
           if echo "$CHANGED_SERVICES" | grep -q 'api-gateway'; then
             echo "Building gradle api-gateway"
-            cd api-gateway || exit 1 # Ensure directory exists
+            cd microservice_springboot/api-gateway || exit 1 # Ensure directory exists
             ./gradlew build
             echo "Building and pushing docker api-gateway"
             docker build -t ${{ secrets.REGISTRY }}/api-gateway-${{ env.ENVIRONMENT }}:${{ env.IMAGE_TAG }} ./microservice_springboot/api-gateway
