@@ -52,6 +52,7 @@ jobs:
         run: |
           # Build and push Docker image for api-gateway if there are changes
           if echo "$changes" | grep -q 'api-gateway'; then
+            echo build microservice_springboot/api-gateway
             cd microservice_springboot/api-gateway
             ./gradlew build
             docker build -t ${{ secrets.REGISTRY }}/api-gateway-${{ env.ENVIRONMENT }}:${{ github.sha }} ./microservice_springboot/api-gateway
@@ -60,6 +61,7 @@ jobs:
           
           # Build and push Docker image for auth-service if there are changes
           if echo "$changes" | grep -q 'auth-service'; then
+            echo build microservice_springboot/auth-service
             cd microservice_springboot/auth-service
             ./gradlew build
             docker build -t ${{ secrets.REGISTRY }}/auth-service-${{ env.ENVIRONMENT }}:${{ github.sha }} ./microservice_springboot/auth-service
