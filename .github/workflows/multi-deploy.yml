@@ -1,4 +1,4 @@
-name: CI/CD Main Pipeline
+name: CI/CD Multi Pipeline (Kubernates)
 
 on:
   push:

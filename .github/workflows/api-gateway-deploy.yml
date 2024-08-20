@@ -1,4 +1,4 @@
-name: CI/CD Deploy to Kubernetes
+name: CI/CD Deploy to Kubernetes (api-gateway)
 
 on:
   workflow_dispatch:
@@ -67,9 +67,10 @@ jobs:
         run: |
           # Build and push Docker image for api-gateway if there are changes
           if echo "$CHANGED_SERVICES" | grep -q 'api-gateway'; then
-            echo "Building and pushing api-gateway"
+            echo "Building gradle api-gateway"
             cd microservice_springboot/api-gateway
             ./gradlew build
+            echo "Building and pushing docker api-gateway"
             docker build -t ${{ secrets.REGISTRY }}/api-gateway-${{ env.ENVIRONMENT }}:${{ env.IMAGE_TAG }} ./microservice_springboot/api-gateway
             docker push ${{ secrets.REGISTRY }}/api-gateway-${{ env.ENVIRONMENT }}:${{ env.IMAGE_TAG }}
             docker images
