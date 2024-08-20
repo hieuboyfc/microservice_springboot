@@ -36,14 +36,6 @@ jobs:
         run: chmod +x ./microservice_springboot/auth-service/gradlew
         if: contains(github.event.head_commit.message, 'auth-service')
 
-      - name: Determine changed services
-        id: changed-services
-        run: |
-          changes=$(git diff --name-only HEAD^ HEAD)
-          echo "CHANGED_FILES<<EOF" >> $GITHUB_ENV
-          echo "$changes" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
-
       - name: Build and push Docker images
         env:
           ENVIRONMENT: ${{ github.ref == 'refs/heads/prod' && 'prod' || (github.ref == 'refs/heads/qas' && 'qas' || 'dev') }}
