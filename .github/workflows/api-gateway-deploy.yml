@@ -81,11 +81,22 @@ jobs:
           if echo "$CHANGED_SERVICES" | grep -q 'api-gateway'; then
             echo "Building gradle api-gateway"
             cd api-gateway || exit 1 # Ensure directory exists
-            ./gradlew build
+            # Run Gradle build
+            ./gradlew build || exit 1
+
+            # Verify if JAR exists
+            ls -l build/libs/
+          
             echo "Building and pushing docker api-gateway"
             echo REGISTRY: ${{ secrets.REGISTRY }}, ENVIRONMENT: ${{ env.ENVIRONMENT }}, IMAGE_TAG: ${{ env.IMAGE_TAG }}
-            docker build -t ${{ secrets.REGISTRY }}/api-gateway-${{ env.ENVIRONMENT }}:${{ env.IMAGE_TAG }} ./api-gateway
+            
+            # Build Docker image
+            docker build -t ${{ secrets.REGISTRY }}/api-gateway-${{ env.ENVIRONMENT }}:${{ env.IMAGE_TAG }} -f Dockerfile .
+            
+            # Push Docker image
             docker push ${{ secrets.REGISTRY }}/api-gateway-${{ env.ENVIRONMENT }}:${{ env.IMAGE_TAG }}
+            
+            # List Docker images
             docker images
           fi
 
