@@ -82,7 +82,7 @@ jobs:
           -H "Authorization: token ${{ secrets.PATH_TOKEN }}" \
           -H "Accept: application/vnd.github.v3+json" \
           -d '{"ref": "${{ github.ref }}", "inputs": {"service": "${{ env.CHANGED_SERVICES }}" }}' \
-          https://api.github.com/repos/${{ github.repository }}/actions/workflows/${{ env.CHANGED_SERVICES }}/.github/workflows/deploy-cicd.yml/dispatches
+          https://api.github.com/repos/${{ github.repository }}/actions/workflows/api-gateway-deploy.yml/dispatches
 
       - name: Trigger auth-service CI/CD
         if: contains(env.CHANGED_SERVICES, 'auth-service')
@@ -94,4 +94,4 @@ jobs:
           -H "Authorization: token ${{ secrets.PATH_TOKEN }}" \
           -H "Accept: application/vnd.github.v3+json" \
           -d '{"ref": "${{ github.ref }}", "inputs": {"service": "${{ env.CHANGED_SERVICES }}"}}' \
-          https://api.github.com/repos/${{ github.repository }}/actions/workflows/${{ env.CHANGED_SERVICES }}/.github/workflows/deploy-cicd.yml/dispatches
+          https://api.github.com/repos/${{ github.repository }}/actions/workflows/auth-service-deploy.yml/dispatches
