@@ -54,9 +54,11 @@ jobs:
           IMAGE_TAG: '1.0.0' # Example static tag or use ${{ github.sha }}
           ENVIRONMENT: ${{ github.ref == 'refs/heads/prod' && 'prod' || (github.ref == 'refs/heads/qas' && 'qas' || 'dev') }}
         run: |
+          set -x # Print commands and their arguments as they are executed
+          
           # Build and push Docker image for api-gateway if there are changes
-          if echo "$changes" | grep -q 'api-gateway'; then
-            echo build microservice_springboot/api-gateway
+          if echo "$CHANGED_FILES" | grep -q 'api-gateway'; then
+            echo "Building and pushing api-gateway"
             cd microservice_springboot/api-gateway
             ./gradlew build
             docker build -t ${{ secrets.REGISTRY }}/api-gateway-${{ env.ENVIRONMENT }}:${{ env.IMAGE_TAG }} ./microservice_springboot/api-gateway
@@ -65,8 +67,8 @@ jobs:
           fi
           
           # Build and push Docker image for auth-service if there are changes
-          if echo "$changes" | grep -q 'auth-service'; then
-            echo build microservice_springboot/auth-service
+          if echo "$CHANGED_FILES" | grep -q 'auth-service'; then
+            echo "Building and pushing auth-service"
             cd microservice_springboot/auth-service
             ./gradlew build
             docker build -t ${{ secrets.REGISTRY }}/auth-service-${{ env.ENVIRONMENT }}:${{ env.IMAGE_TAG }} ./microservice_springboot/auth-service
