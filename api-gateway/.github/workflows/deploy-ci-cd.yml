@@ -37,30 +37,19 @@ jobs:
       - name: Determine changed services
         id: changed-services
         run: |
-          # Fetch the previous commit SHA
           PREVIOUS_SHA=$(git rev-parse HEAD^ || echo "No previous commit")
-          
-          # Get the list of changed files
-          changes=$(git diff --name-only $PREVIOUS_SHA HEAD || true) # Handle the case when HEAD^ doesn't exist
-
-          # Debug: Output changed files
+          changes=$(git diff --name-only $PREVIOUS_SHA HEAD || true)
           echo "Changed files:"
           echo "$changes"
-
-          # Initialize empty variable
           CHANGED_SERVICES=""
-
-          # Determine changed services
           if echo "$changes" | grep -q '^api-gateway/'; then
             CHANGED_SERVICES="api-gateway"
           fi
-        
-          # Export the result as an environment variable
           echo "CHANGED_SERVICES=$CHANGED_SERVICES" >> $GITHUB_ENV
 
       - name: Debug CHANGED_FILES
         run: |
-          echo "Changed services: ${{ env.api-gateway }}"
+          echo "Changed services: $CHANGED_SERVICES"
 
       - name: Login to Docker Hub
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login ${{ secrets.DOCKER_REGISTRY }} -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
@@ -70,8 +59,6 @@ jobs:
           IMAGE_TAG: '1.0.0' # Example static tag or use ${{ github.sha }}
           ENVIRONMENT: ${{ github.ref == 'refs/heads/prod' && 'prod' || (github.ref == 'refs/heads/qas' && 'qas' || 'dev') }}
         run: |
-          set -x # Print commands and their arguments as they are executed
-          
           # Build and push Docker image for api-gateway if there are changes
           if echo "$CHANGED_SERVICES" | grep -q 'api-gateway'; then
             echo "Building and pushing api-gateway"
@@ -104,30 +91,19 @@ jobs:
       - name: Determine changed services
         id: changed-services
         run: |
-          # Fetch the previous commit SHA
           PREVIOUS_SHA=$(git rev-parse HEAD^ || echo "No previous commit")
-          
-          # Get the list of changed files
-          changes=$(git diff --name-only $PREVIOUS_SHA HEAD || true) # Handle the case when HEAD^ doesn't exist
-
-          # Debug: Output changed files
+          changes=$(git diff --name-only $PREVIOUS_SHA HEAD || true)
           echo "Changed files:"
           echo "$changes"
-
-          # Initialize empty variable
           CHANGED_SERVICES=""
-
-          # Determine changed services
           if echo "$changes" | grep -q '^api-gateway/'; then
             CHANGED_SERVICES="api-gateway"
           fi
-          
-          # Export the result as an environment variable
           echo "CHANGED_SERVICES=$CHANGED_SERVICES" >> $GITHUB_ENV
 
       - name: Debug CHANGED_FILES
         run: |
-          echo "Changed services: ${{ env.api-gateway }}"
+          echo "Changed services: $CHANGED_SERVICES"
 
       - name: Deploy to Kubernetes
         env:
@@ -146,7 +122,7 @@ jobs:
 
       - name: Check deployment status
         run: |
-          if echo "$changes" | grep -q 'api-gateway'; then
+          if echo "$CHANGED_SERVICES" | grep -q 'api-gateway'; then
             kubectl rollout status deployment/api-gateway --namespace=${{ secrets.KUBE_NAMESPACE }} || true
           fi
 

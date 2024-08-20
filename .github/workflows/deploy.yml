@@ -1,0 +1,38 @@
+name: CI/CD Deploy to Kubernetes
+
+on:
+  push:
+    branches:
+      - dev
+      - qas
+      - prod
+  pull_request:
+    branches:
+      - dev
+      - qas
+      - prod
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [api-gateway, auth-service]
+        environment: [dev, qas, prod]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Build and test
+        run: |
+          cd ${{ matrix.service }}
+          ./gradlew build
