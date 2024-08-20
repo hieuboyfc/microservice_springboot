@@ -36,7 +36,6 @@ jobs:
       - name: List files
         run: |
           ls -la
-          ls -la microservice_springboot
           ls -la microservice_springboot/api-gateway
 
       - name: Make gradlew executable for api-gateway
