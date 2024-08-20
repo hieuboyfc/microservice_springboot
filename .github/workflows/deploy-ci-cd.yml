@@ -28,9 +28,16 @@ jobs:
       - name: List files
         run: ls -la
 
-      - name: Build with Gradle
-        run: ./gradlew build
-        working-directory: ./microservice_springboot
+      - name: Make gradlew executable
+        run: chmod +x ./microservice_springboot/gradlew
+
+      - name: Determine changed services
+        id: changed-services
+        run: |
+          changes=$(git diff --name-only HEAD^ HEAD)
+          echo "CHANGED_FILES<<EOF" >> $GITHUB_ENV
+          echo "$changes" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
 
       - name: Build and push Docker images
         env:
@@ -41,12 +48,16 @@ jobs:
 
           # Build and push Docker image for api-gateway if there are changes
           if echo "$changes" | grep -q 'api-gateway'; then
+            cd microservice_springboot/api-gateway
+            ./gradlew build
             docker build -t ${{ secrets.REGISTRY }}/api-gateway-${{ env.ENVIRONMENT }}:${{ github.sha }} ./microservice_springboot/api-gateway
             docker push ${{ secrets.REGISTRY }}/api-gateway-${{ env.ENVIRONMENT }}:${{ github.sha }}
           fi
           
           # Build and push Docker image for auth-service if there are changes
           if echo "$changes" | grep -q 'auth-service'; then
+            cd microservice_springboot/auth-service
+            ./gradlew build
             docker build -t ${{ secrets.REGISTRY }}/auth-service-${{ env.ENVIRONMENT }}:${{ github.sha }} ./microservice_springboot/auth-service
             docker push ${{ secrets.REGISTRY }}/auth-service-${{ env.ENVIRONMENT }}:${{ github.sha }}
           fi
