@@ -52,10 +52,10 @@ jobs:
           echo "$changes"
           
           # Determine changed services
-          if echo "$changes" | grep -q '^microservice_springboot/api-gateway/'; then
+          if echo "$changes" | grep -q '^api-gateway/'; then
             echo "api-gateway" >> $GITHUB_ENV
           fi
-          if echo "$changes" | grep -q '^microservice_springboot/auth-service/'; then
+          if echo "$changes" | grep -q '^auth-service/'; then
             echo "auth-service" >> $GITHUB_ENV
           fi
           
