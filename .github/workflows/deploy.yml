@@ -1,4 +1,4 @@
-name: CI/CD Deploy to Kubernetes (Parent)
+name: CI/CD Main Pipeline
 
 on:
   push:
@@ -13,67 +13,41 @@ on:
       - prod
 
 jobs:
-  build-and-test:
+  detect-changes:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        service: [api-gateway, auth-service]
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
           fetch-depth: 2
 
-      - name: Set up Java
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '21'
-
       - name: Determine changed services
-        id: changed-services
+        id: determine-changes
         run: |
-          # Get the list of changed files
-          changes=$(git diff --name-only HEAD^ HEAD || true)
+          PREVIOUS_SHA=$(git rev-parse HEAD^ || echo "No previous commit")
+          changes=$(git diff --name-only $PREVIOUS_SHA HEAD || true)
+          echo "Changed files:"
+          echo "$changes"
 
-          # Initialize empty variable
-          CHANGED_SERVICES=""
-
-          # Determine changed services
+          # Initialize environment variables for changed services
           if echo "$changes" | grep -q '^api-gateway/'; then
-            CHANGED_SERVICES="api-gateway"
+            echo "api-gateway changed" >> $GITHUB_ENV
           fi
+
           if echo "$changes" | grep -q '^auth-service/'; then
-            CHANGED_SERVICES="auth-service"
+            echo "auth-service changed" >> $GITHUB_ENV
           fi
 
-          # Export the result as an environment variable
-          echo "CHANGED_SERVICES=$CHANGED_SERVICES" >> $GITHUB_ENV
-
-      - name: Check if service exists
-        id: check-service
+      - name: Trigger api-gateway CI/CD
+        if: env.api-gateway-changed == 'api-gateway changed'
         run: |
-          if [ -d ${{ matrix.service }} ]; then
-            echo "${{ matrix.service }} directory exists."
-          else
-            echo "${{ matrix.service }} directory does not exist. Skipping steps."
-            exit 0
-          fi
+          curl -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          -d '{"ref": "${{ github.ref }}"}' \
+          https://api.github.com/repos/${{ github.repository }}/actions/workflows/api-gateway.yml/dispatches
 
-      - name: Grant execute permissions to gradlew
-        if: steps.check-service.outputs.exists == 'true'
-        run: chmod +x ./${{ matrix.service }}/gradlew
-
-      - name: Build and test for changed services
-        if: steps.check-service.outputs.exists == 'true'
+      - name: Trigger auth-service CI/CD
+        if: env.auth-service-changed == 'auth-service changed'
         run: |
-          if echo "$CHANGED_SERVICES" | grep -q '${{ matrix.service }}'; then
-            echo "Building and testing ${{ matrix.service }}"
-            cd ${{ matrix.service }}
-            ./gradlew build
-          else
-            echo "Skipping ${{ matrix.service }} as it has not changed"
-          fi
-        env:
-          CHANGED_SERVICES: ${{ env.CHANGED_SERVICES }}
+          curl -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          -d '{"ref": "${{ github.ref }}"}' \
+          https://api.github.com/repos/${{ github.repository }}/actions/workflows/auth-service.yml/dispatches
