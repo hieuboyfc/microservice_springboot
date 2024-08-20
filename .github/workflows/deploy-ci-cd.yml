@@ -83,18 +83,18 @@ jobs:
         with:
           version: 'v3.9.4' # Thay đổi theo yêu cầu
 
-      - name: Configure Kubernetes access
-        env:
-          KUBE_CLUSTER_NAME: ${{ secrets.KUBE_CLUSTER_NAME }}
-          KUBE_SERVER: ${{ secrets.KUBE_SERVER }}
-          KUBE_CA_CERT: ${{ secrets.KUBE_CA_CERT }}
-          KUBE_USER: ${{ secrets.KUBE_USER }}
-          KUBE_TOKEN: ${{ secrets.KUBE_TOKEN }}
-        run: |
-          kubectl config set-cluster $KUBE_CLUSTER_NAME --server=$KUBE_SERVER --certificate-authority=<(echo $KUBE_CA_CERT | base64 -d)
-          kubectl config set-credentials $KUBE_USER --token=$KUBE_TOKEN
-          kubectl config set-context $KUBE_CLUSTER_NAME --cluster=$KUBE_CLUSTER_NAME --user=$KUBE_USER
-          kubectl config use-context $KUBE_CLUSTER_NAME
+#      - name: Configure Kubernetes access
+#        env:
+#          KUBE_CLUSTER_NAME: ${{ secrets.KUBE_CLUSTER_NAME }}
+#          KUBE_SERVER: ${{ secrets.KUBE_SERVER }}
+#          KUBE_CA_CERT: ${{ secrets.KUBE_CA_CERT }}
+#          KUBE_USER: ${{ secrets.KUBE_USER }}
+#          KUBE_TOKEN: ${{ secrets.KUBE_TOKEN }}
+#        run: |
+#          kubectl config set-cluster $KUBE_CLUSTER_NAME --server=$KUBE_SERVER --certificate-authority=<(echo $KUBE_CA_CERT | base64 -d)
+#          kubectl config set-credentials $KUBE_USER --token=$KUBE_TOKEN
+#          kubectl config set-context $KUBE_CLUSTER_NAME --cluster=$KUBE_CLUSTER_NAME --user=$KUBE_USER
+#          kubectl config use-context $KUBE_CLUSTER_NAME
 
       - name: Deploy to Kubernetes
         env:
