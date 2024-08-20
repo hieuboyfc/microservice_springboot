@@ -44,7 +44,7 @@ jobs:
           ls -la api-gateway
 
       - name: Make gradlew executable for api-gateway
-        run: chmod +x ./microservice_springboot/api-gateway/gradlew
+        run: chmod +x api-gateway/gradlew
         if: contains(github.event.head_commit.message, 'api-gateway')
 
       - name: Determine changed services
