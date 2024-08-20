@@ -84,7 +84,7 @@ jobs:
           echo PATH_TOKEN: ${{ secrets.PATH_TOKEN }}
           
           curl -X POST \
-          -H "Authorization: Bearer ${{ secrets.PATH_TOKEN }}" \
+          -H "Authorization: token ${{ secrets.PATH_TOKEN }}" \
           -H "Accept: application/vnd.github.v3+json" \
           -d '{"ref": "${{ github.ref }}"}' \
           https://api.github.com/repos/${{ github.repository }}/actions/workflows/113182959/dispatches
@@ -96,7 +96,7 @@ jobs:
           echo PATH_TOKEN: ${{ secrets.PATH_TOKEN }}
           
           curl -X POST \
-          -H "Authorization: Bearer ${{ secrets.PATH_TOKEN }}" \
+          -H "Authorization: token ${{ secrets.PATH_TOKEN }}" \
           -H "Accept: application/vnd.github.v3+json" \
           -d '{"ref": "${{ github.ref }}"}' \
           https://api.github.com/repos/${{ github.repository }}/actions/workflows/deploy-ci-cd.yml/dispatches
