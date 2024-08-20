@@ -149,6 +149,13 @@ jobs:
         run: |
           echo "Changed services: $CHANGED_SERVICES"
 
+      - name: Configure kubectl
+        run: |
+          kubectl config set-cluster my-cluster --server=${{ secrets.KUBE_SERVER }} --certificate-authority=<(echo "${{ secrets.KUBE_CA_CERT }}" | base64 -d)
+          kubectl config set-credentials my-user --token=${{ secrets.KUBE_TOKEN }}
+          kubectl config set-context my-context --cluster=my-cluster --user=my-user --namespace=${{ secrets.KUBE_NAMESPACE }}
+          kubectl config use-context my-context
+
       - name: Deploy to Kubernetes
         env:
           IMAGE_TAG: '1.0.0' # Example static tag or use ${{ github.sha }}
