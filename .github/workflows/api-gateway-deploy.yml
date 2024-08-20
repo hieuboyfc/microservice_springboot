@@ -93,6 +93,19 @@ jobs:
         with:
           fetch-depth: 2
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+        with:
+          version: 'latest'
+
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
       - name: Set up Kubernetes CLI
         uses: Azure/setup-kubectl@v1
         with:
@@ -137,23 +150,24 @@ jobs:
         env:
           IMAGE_TAG: '1.0.0' # Example static tag or use ${{ github.sha }}
           ENVIRONMENT: ${{ github.ref == 'refs/heads/prod' && 'prod' || (github.ref == 'refs/heads/qas' && 'qas' || 'dev') }}
+          NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
         run: |
           # Deploy api-gateway if there are changes
           if echo "$CHANGED_SERVICES" | grep -q 'api-gateway'; then
-            echo "Deploying api-gateway to $ENVIRONMENT environment"
-                  
+            echo "Deploying api-gateway to environment: $ENVIRONMENT, namespace: $NAMESPACE"
+          
             cd api-gateway/k8s || exit 1 # Ensure directory exists        
           
             # Verify if the values file exists
             VALUES_FILE="./values-${ENVIRONMENT}.yaml"
             if [ -f "$VALUES_FILE" ]; then
-              echo "Applying Helm chart, namespace: ${{ secrets.KUBE_NAMESPACE }}"
+              echo "Applying Helm chart, namespace: $NAMESPACE"
           
               helm upgrade --install api-gateway . \
-              --namespace ${{ secrets.KUBE_NAMESPACE }} \
+              --namespace "$NAMESPACE" \
               --values values.yaml \
               --values "$VALUES_FILE" \
-              # --set image.tag=${IMAGE_TAG}
+              # --set image.tag="$IMAGE_TAG"
             else
               echo "Values file not found: $VALUES_FILE"
               exit 1
