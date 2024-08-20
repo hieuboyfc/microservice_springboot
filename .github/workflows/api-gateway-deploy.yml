@@ -139,12 +139,10 @@ jobs:
         run: |
           echo "Changed services: $CHANGED_SERVICES"
 
-      - name: Configure kubectl
+      - name: Create kubeconfig
         run: |
-          kubectl config set-cluster my-cluster --server="https://kubernetes.docker.internal:6443"
-          kubectl config set-credentials my-user --token=${{ secrets.KUBE_TOKEN }}
-          kubectl config set-context my-context --cluster=my-cluster --user=hieuboy --namespace=${{ secrets.KUBE_NAMESPACE }}
-          kubectl config use-context my-context
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBE_CONFIG }}" > $HOME/.kube/config
 
       - name: Deploy to Kubernetes
         env:
