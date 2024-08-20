@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/fallback1")
+@RequestMapping("/fallback")
 public class FallbackAPI {
 
     @GetMapping

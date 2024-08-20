@@ -34,10 +34,6 @@ jobs:
         run: chmod +x ./microservice_springboot/api-gateway/gradlew
         if: contains(github.event.head_commit.message, 'api-gateway')
 
-      - name: Make gradlew executable for auth-service
-        run: chmod +x ./microservice_springboot/auth-service/gradlew
-        if: contains(github.event.head_commit.message, 'auth-service')
-
       - name: Determine changed services
         id: changed-services
         run: |
@@ -58,16 +54,13 @@ jobs:
           if echo "$changes" | grep -q '^api-gateway/'; then
             CHANGED_SERVICES="api-gateway"
           fi
-          if echo "$changes" | grep -q '^auth-service/'; then
-            CHANGED_SERVICES="${CHANGED_SERVICES} auth-service"
-          fi
-
+        
           # Export the result as an environment variable
           echo "CHANGED_SERVICES=$CHANGED_SERVICES" >> $GITHUB_ENV
 
       - name: Debug CHANGED_FILES
         run: |
-          echo "Changed services: ${{ env.api-gateway }} ${{ env.auth-service }}"
+          echo "Changed services: ${{ env.api-gateway }}"
 
       - name: Login to Docker Hub
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login ${{ secrets.DOCKER_REGISTRY }} -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
@@ -86,16 +79,6 @@ jobs:
             ./gradlew build
             docker build -t ${{ secrets.REGISTRY }}/api-gateway-${{ env.ENVIRONMENT }}:${{ env.IMAGE_TAG }} ./microservice_springboot/api-gateway
             docker push ${{ secrets.REGISTRY }}/api-gateway-${{ env.ENVIRONMENT }}:${{ env.IMAGE_TAG }}
-            docker images
-          fi
-          
-          # Build and push Docker image for auth-service if there are changes
-          if echo "$CHANGED_SERVICES" | grep -q 'auth-service'; then
-            echo "Building and pushing auth-service"
-            cd microservice_springboot/auth-service
-            ./gradlew build
-            docker build -t ${{ secrets.REGISTRY }}/auth-service-${{ env.ENVIRONMENT }}:${{ env.IMAGE_TAG }} ./microservice_springboot/auth-service
-            docker push ${{ secrets.REGISTRY }}/auth-service-${{ env.ENVIRONMENT }}:${{ env.IMAGE_TAG }}
             docker images
           fi
 
@@ -118,26 +101,33 @@ jobs:
         with:
           version: 'latest'
 
-#      - name: Configure Kubernetes access
-#        env:
-#          KUBE_CLUSTER_NAME: ${{ secrets.KUBE_CLUSTER_NAME }}
-#          KUBE_SERVER: ${{ secrets.KUBE_SERVER }}
-#          KUBE_CA_CERT: ${{ secrets.KUBE_CA_CERT }}
-#          KUBE_USER: ${{ secrets.KUBE_USER }}
-#          KUBE_TOKEN: ${{ secrets.KUBE_TOKEN }}
-#        run: |
-#          kubectl config set-cluster $KUBE_CLUSTER_NAME --server=$KUBE_SERVER --certificate-authority=<(echo $KUBE_CA_CERT | base64 -d)
-#          kubectl config set-credentials $KUBE_USER --token=$KUBE_TOKEN
-#          kubectl config set-context $KUBE_CLUSTER_NAME --cluster=$KUBE_CLUSTER_NAME --user=$KUBE_USER
-#          kubectl config use-context $KUBE_CLUSTER_NAME
-
       - name: Determine changed services
         id: changed-services
         run: |
-          changes=$(git diff --name-only HEAD^ HEAD || true) # Handle the case when HEAD^ doesn't exist
-          echo "CHANGED_FILES<<EOF" >> $GITHUB_ENV
-          echo "$changes" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
+          # Fetch the previous commit SHA
+          PREVIOUS_SHA=$(git rev-parse HEAD^ || echo "No previous commit")
+          
+          # Get the list of changed files
+          changes=$(git diff --name-only $PREVIOUS_SHA HEAD || true) # Handle the case when HEAD^ doesn't exist
+
+          # Debug: Output changed files
+          echo "Changed files:"
+          echo "$changes"
+
+          # Initialize empty variable
+          CHANGED_SERVICES=""
+
+          # Determine changed services
+          if echo "$changes" | grep -q '^api-gateway/'; then
+            CHANGED_SERVICES="api-gateway"
+          fi
+          
+          # Export the result as an environment variable
+          echo "CHANGED_SERVICES=$CHANGED_SERVICES" >> $GITHUB_ENV
+
+      - name: Debug CHANGED_FILES
+        run: |
+          echo "Changed services: ${{ env.api-gateway }}"
 
       - name: Deploy to Kubernetes
         env:
@@ -145,7 +135,7 @@ jobs:
           ENVIRONMENT: ${{ github.ref == 'refs/heads/prod' && 'prod' || (github.ref == 'refs/heads/qas' && 'qas' || 'dev') }}
         run: |
           # Deploy api-gateway if there are changes
-          if echo "$changes" | grep -q 'api-gateway'; then
+          if echo "$CHANGED_SERVICES" | grep -q 'api-gateway'; then
             echo "Deploying api-gateway to $ENVIRONMENT environment"
             helm upgrade --install api-gateway ./microservice_springboot/api-gateway/k8s \
               --namespace ${{ secrets.KUBE_NAMESPACE }} \
@@ -154,22 +144,10 @@ jobs:
               --set image.tag=${env.IMAGE_TAG}
           fi
 
-          # Deploy auth-service if there are changes
-          if echo "$changes" | grep -q 'auth-service'; then
-            echo "Deploying auth-service to $ENVIRONMENT environment"
-            helm upgrade --install auth-service ./microservice_springboot/auth-service/k8s \
-              --namespace ${{ secrets.KUBE_NAMESPACE }} \
-              --values ./microservice_springboot/auth-service/k8s/values.yaml \
-              --values ./microservice_springboot/auth-service/k8s/values-${env.ENVIRONMENT}.yaml \
-              --set image.tag=${env.IMAGE_TAG}
-
       - name: Check deployment status
         run: |
           if echo "$changes" | grep -q 'api-gateway'; then
             kubectl rollout status deployment/api-gateway --namespace=${{ secrets.KUBE_NAMESPACE }} || true
-          fi
-          if echo "$changes" | grep -q 'auth-service'; then
-            kubectl rollout status deployment/auth-service --namespace=${{ secrets.KUBE_NAMESPACE }} || true
           fi
 
 # REGISTRY: Địa chỉ Docker registry (ví dụ: docker.io/your-username).
