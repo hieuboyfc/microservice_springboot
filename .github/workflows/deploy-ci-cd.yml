@@ -41,20 +41,26 @@ jobs:
       - name: Determine changed services
         id: changed-services
         run: |
-          # Get the list of changed files
-          changes=$(git diff --name-only HEAD^ HEAD || true) # Handle the case when HEAD^ doesn't exist
+          # Fetch the previous commit SHA
+          PREVIOUS_SHA=$(git rev-parse HEAD^ || echo "No previous commit")
           
-          # Echo changed files for debugging
+          # Get the list of changed files
+          changes=$(git diff --name-only $PREVIOUS_SHA HEAD || true) # Handle the case when HEAD^ doesn't exist
+          
+          # Debug: Output changed files
           echo "Changed files:"
           echo "$changes"
           
           # Determine changed services
-          if echo "$changes" | grep -q 'api-gateway'; then
+          if echo "$changes" | grep -q '^microservice_springboot/api-gateway/'; then
             echo "api-gateway" >> $GITHUB_ENV
           fi
-          if echo "$changes" | grep -q 'auth-service'; then
+          if echo "$changes" | grep -q '^microservice_springboot/auth-service/'; then
             echo "auth-service" >> $GITHUB_ENV
           fi
+          
+          # Output for debugging
+          echo "Changed services: ${{ env.api-gateway }} ${{ env.auth-service }}"
 
       - name: Debug CHANGED_FILES
         run: |
@@ -71,7 +77,7 @@ jobs:
           set -x # Print commands and their arguments as they are executed
           
           # Build and push Docker image for api-gateway if there are changes
-          if echo "$CHANGED_FILES" | grep -q 'api-gateway'; then
+          if [[ -n "${{ env.api-gateway }}" ]]; then
             echo "Building and pushing api-gateway"
             cd microservice_springboot/api-gateway
             ./gradlew build
@@ -81,7 +87,7 @@ jobs:
           fi
           
           # Build and push Docker image for auth-service if there are changes
-          if echo "$CHANGED_FILES" | grep -q 'auth-service'; then
+          if [[ -n "${{ env.auth-service }}" ]]; then
             echo "Building and pushing auth-service"
             cd microservice_springboot/auth-service
             ./gradlew build
