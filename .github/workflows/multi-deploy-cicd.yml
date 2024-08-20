@@ -76,7 +76,7 @@ jobs:
         if: contains(env.CHANGED_SERVICES, 'api-gateway')
         run: |
           echo "Triggering api-gateway CI/CD workflow"
-          echo PATH_TOKEN: ${{ secrets.PATH_TOKEN }}
+          echo PATH_TOKEN: ${{ secrets.PATH_TOKEN }}, ${{ github.repository }}, ${{ github.ref }}
           
           curl -X POST \
           -H "Authorization: token ${{ secrets.PATH_TOKEN }}" \
@@ -88,7 +88,7 @@ jobs:
         if: contains(env.CHANGED_SERVICES, 'auth-service')
         run: |
           echo "Triggering auth-service CI/CD workflow"
-          echo PATH_TOKEN: ${{ secrets.PATH_TOKEN }}
+          echo PATH_TOKEN: ${{ secrets.PATH_TOKEN }}, ${{ github.repository }}, ${{ github.ref }}
           
           curl -X POST \
           -H "Authorization: token ${{ secrets.PATH_TOKEN }}" \
