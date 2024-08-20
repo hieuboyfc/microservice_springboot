@@ -83,7 +83,8 @@ jobs:
             cd api-gateway || exit 1 # Ensure directory exists
             ./gradlew build
             echo "Building and pushing docker api-gateway"
-            docker build -t ${{ secrets.REGISTRY }}/api-gateway-${{ env.ENVIRONMENT }}:${{ env.IMAGE_TAG }} ./microservice_springboot/api-gateway
+            echo REGISTRY: ${{ secrets.REGISTRY }}, ENVIRONMENT: ${{ env.ENVIRONMENT }}, IMAGE_TAG: ${{ env.IMAGE_TAG }}
+            docker build -t ${{ secrets.REGISTRY }}/api-gateway-${{ env.ENVIRONMENT }}:${{ env.IMAGE_TAG }} ./api-gateway
             docker push ${{ secrets.REGISTRY }}/api-gateway-${{ env.ENVIRONMENT }}:${{ env.IMAGE_TAG }}
             docker images
           fi
