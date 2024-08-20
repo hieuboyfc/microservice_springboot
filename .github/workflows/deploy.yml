@@ -21,32 +21,52 @@ jobs:
         with:
           fetch-depth: 2
 
+      - name: Set up Git
+        run: |
+          git config --global user.name "ZimJi"
+          git config --global user.email "hieuboyfc@gmail.com"
+
       - name: Determine changed services
         id: determine-changes
         run: |
+          # Fetch the previous commit SHA
           PREVIOUS_SHA=$(git rev-parse HEAD^ || echo "No previous commit")
+          
+          # Get the list of changed files
           changes=$(git diff --name-only $PREVIOUS_SHA HEAD || true)
+          
+          # Debug: Output changed files
           echo "Changed files:"
           echo "$changes"
 
-          # Initialize environment variables for changed services
+          # Initialize empty variable
+          CHANGED_SERVICES=""
+
+          # Determine changed services
           if echo "$changes" | grep -q '^api-gateway/'; then
-            echo "api-gateway changed" >> $GITHUB_ENV
+            CHANGED_SERVICES="api-gateway"
           fi
 
           if echo "$changes" | grep -q '^auth-service/'; then
-            echo "auth-service changed" >> $GITHUB_ENV
+            CHANGED_SERVICES="auth-service"
           fi
 
+          # Export the result as an environment variable
+          echo "CHANGED_SERVICES=$CHANGED_SERVICES" >> $GITHUB_ENV
+
+      - name: Debug CHANGED_FILES
+        run: |
+          echo "Changed services: ${{ env.CHANGED_SERVICES }}"
+
       - name: Trigger api-gateway CI/CD
-        if: env.api-gateway-changed == 'api-gateway changed'
+        if: contains(env.CHANGED_SERVICES, 'api-gateway')
         run: |
           curl -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
           -d '{"ref": "${{ github.ref }}"}' \
           https://api.github.com/repos/${{ github.repository }}/actions/workflows/api-gateway.yml/dispatches
 
       - name: Trigger auth-service CI/CD
-        if: env.auth-service-changed == 'auth-service changed'
+        if: contains(env.CHANGED_SERVICES, 'auth-service')
         run: |
           curl -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
           -d '{"ref": "${{ github.ref }}"}' \
