@@ -33,10 +33,15 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: List files
+      - name: List files in root directory
         run: |
+          echo "Root directory contents:"
           ls -la
-          ls -la microservice_springboot/api-gateway
+
+      - name: List files in api-gateway directory
+        run: |
+          echo "Contents of api-gateway directory:"
+          ls -la api-gateway
 
       - name: Make gradlew executable for api-gateway
         run: chmod +x ./microservice_springboot/api-gateway/gradlew
