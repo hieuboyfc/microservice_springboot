@@ -103,16 +103,6 @@ jobs:
         with:
           version: 'latest'
 
-      - name: List files in root directory
-        run: |
-          echo "Root directory contents:"
-          ls -la
-
-      - name: List files in api-gateway directory
-        run: |
-          echo "Contents of api-gateway directory:"
-          ls -la api-gateway
-
       - name: Make executable
         run: chmod +x api-gateway
 
@@ -152,18 +142,18 @@ jobs:
           if echo "$CHANGED_SERVICES" | grep -q 'api-gateway'; then
             echo "Deploying api-gateway to $ENVIRONMENT environment"
                   
-            cd k8s || exit 1 # Ensure directory exists        
+            cd api-gateway/k8s || exit 1 # Ensure directory exists        
           
             # Verify if the values file exists
-            VALUES_FILE="./k8s/values-${ENVIRONMENT}.yaml"
-            if [ -f "api-gateway/k8s/values-${ENVIRONMENT}.yaml" ]; then
+            VALUES_FILE="./values-${ENVIRONMENT}.yaml"
+            if [ -f "$VALUES_FILE" ]; then
               echo "Applying Helm chart, namespace: ${{ secrets.KUBE_NAMESPACE }}"
           
-              helm upgrade --install api-gateway ./k8s \
-                --namespace ${{ secrets.KUBE_NAMESPACE }} \
-                --values ./k8s/values.yaml \
-                --values "$VALUES_FILE" \
-                # --set image.tag=${IMAGE_TAG}
+              helm upgrade --install api-gateway . \
+              --namespace ${{ secrets.KUBE_NAMESPACE }} \
+              --values values.yaml \
+              --values "$VALUES_FILE" \
+              # --set image.tag=${IMAGE_TAG}
             else
               echo "Values file not found: $VALUES_FILE"
               exit 1
