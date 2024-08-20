@@ -18,7 +18,6 @@ jobs:
     strategy:
       matrix:
         service: [api-gateway, auth-service]
-        environment: [dev, qas, prod]
 
     steps:
       - name: Checkout code
@@ -32,7 +31,46 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Build and test
+      - name: Grant execute permissions to gradlew
+        run: chmod +x ./${{ matrix.service }}/gradlew
+
+      - name: Determine changed services
+        id: changed-services
         run: |
-          cd ${{ matrix.service }}
-          ./gradlew build
+          # Get the list of changed files
+          changes=$(git diff --name-only HEAD^ HEAD || true)
+
+          # Initialize empty variable
+          CHANGED_SERVICES=""
+
+          # Determine changed services
+          if echo "$changes" | grep -q '^api-gateway/'; then
+            CHANGED_SERVICES="api-gateway"
+          fi
+          if echo "$changes" | grep -q '^auth-service/'; then
+            CHANGED_SERVICES="auth-service"
+          fi
+
+          # Export the result as an environment variable
+          echo "CHANGED_SERVICES=$CHANGED_SERVICES" >> $GITHUB_ENV
+
+      - name: Check if service exists
+        run: |
+          if [ -d ${{ matrix.service }} ]; then
+            echo "${{ matrix.service }} directory exists."
+          else
+            echo "${{ matrix.service }} directory does not exist. Skipping build."
+            exit 0
+          fi
+
+      - name: Build and test for changed services
+        run: |
+          if echo "$CHANGED_SERVICES" | grep -q '${{ matrix.service }}'; then
+            echo "Building and testing ${{ matrix.service }}"
+            cd ${{ matrix.service }}
+            ./gradlew build
+          else
+            echo "Skipping ${{ matrix.service }} as it has not changed"
+          fi
+        env:
+          CHANGED_SERVICES: ${{ env.CHANGED_SERVICES }}
