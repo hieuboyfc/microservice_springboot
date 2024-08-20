@@ -14,7 +14,7 @@ on:
 
 jobs:
   multi-pipeline:
-    name: CI/CD Main Pipeline (Kubernates)
+    name: CI/CD Multi Pipeline (Kubernates)
     runs-on: ubuntu-latest
     permissions:
       actions: write
@@ -27,11 +27,6 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 2
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'
 
       - name: Use PATH_TOKEN
         run: |

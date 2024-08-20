@@ -2,6 +2,11 @@ name: CI/CD Deploy to Kubernetes
 
 on:
   workflow_dispatch:
+    inputs:
+      service:
+        description: 'The service to Deploy'
+        required: true
+        default: 'api-gateway'
   push:
     branches:
       - dev
