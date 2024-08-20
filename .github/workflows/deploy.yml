@@ -16,7 +16,12 @@ jobs:
   multi-pipeline:
     name: CI/CD Main Pipeline (Kubernates)
     runs-on: ubuntu-latest
-    permissions: write-all
+    permissions:
+      actions: write
+      contents: write
+      issues: write
+      pull-requests: write
+      repository-projects: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -26,7 +31,7 @@ jobs:
       - name: Use GITHUB_TOKEN
         run: |
           echo GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          curl -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+          curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
                -H "Accept: application/vnd.github.v3+json" \
                https://api.github.com/user
 
