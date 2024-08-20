@@ -144,11 +144,29 @@ jobs:
           # Deploy api-gateway if there are changes
           if echo "$CHANGED_SERVICES" | grep -q 'api-gateway'; then
             echo "Deploying api-gateway to $ENVIRONMENT environment"
-            helm upgrade --install api-gateway ./api-gateway/k8s \
-              --namespace ${{ secrets.KUBE_NAMESPACE }} \
-              --values ./api-gateway/k8s/values.yaml \
-              --values ./api-gateway/k8s/values-${env.ENVIRONMENT}.yaml \
-              --set image.tag=${env.IMAGE_TAG}
+          
+            # Print the current directory for debugging
+            echo "Current directory:"
+            pwd
+          
+            # Print files in the current directory for debugging
+            echo "Files in the current directory:"
+            ls -la
+          
+            # Verify if the values file exists
+            VALUES_FILE="./api-gateway/k8s/values-${ENVIRONMENT}.yaml"
+            if [ -f "api-gateway/k8s/values-${ENVIRONMENT}.yaml" ]; then
+              echo "Applying Helm chart, namespace: ${{ secrets.KUBE_NAMESPACE }}"
+          
+              helm upgrade --install api-gateway ./api-gateway/k8s \
+                --namespace ${{ secrets.KUBE_NAMESPACE }} \
+                --values ./api-gateway/k8s/values.yaml \
+                --values "$VALUES_FILE" \
+                --set image.tag=${IMAGE_TAG}
+            else
+              echo "Values file not found: $VALUES_FILE"
+              exit 1
+            fi
           fi
 
       - name: Check deployment status
