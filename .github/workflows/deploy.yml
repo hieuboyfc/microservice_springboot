@@ -60,27 +60,20 @@ jobs:
 
       - name: Trigger api-gateway CI/CD
         if: contains(env.CHANGED_SERVICES, 'api-gateway')
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const response = await fetch(`https://api.github.com/repos/${{ github.repository }}/actions/workflows/api-gateway.yml/dispatches`, {
-              method: 'POST',
-              headers: {
-                'Authorization': `token ${{ secrets.GITHUB_TOKEN }}`,
-                'Accept': 'application/vnd.github.v3+json',
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({
-                ref: '${{ github.ref }}'
-              })
-            });
-            if (!response.ok) {
-              throw new Error(`Request failed: ${response.statusText}`);
-            }
+        run: |
+          echo "Triggering api-gateway CI/CD workflow"
+          echo GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+          curl -X POST \
+          -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          -H "Accept: application/vnd.github.v3+json" \
+          -d '{"ref": "${{ github.ref }}"}' \
+          https://api.github.com/repos/${{ github.repository }}/actions/workflows/113182959/dispatches
 
       - name: Trigger auth-service CI/CD
         if: contains(env.CHANGED_SERVICES, 'auth-service')
         run: |
+          echo "Triggering auth-service CI/CD workflow"
           echo GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           curl -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
           -d '{"ref": "${{ github.ref }}"}' \
