@@ -34,7 +34,10 @@ jobs:
           java-version: '21'
 
       - name: List files
-        run: ls -la
+        run: |
+          ls -la
+          ls -la microservice_springboot
+          ls -la microservice_springboot/api-gateway
 
       - name: Make gradlew executable for api-gateway
         run: chmod +x ./microservice_springboot/api-gateway/gradlew
