@@ -119,6 +119,19 @@ jobs:
         with:
           version: 'latest'
 
+      - name: List files in root directory
+        run: |
+          echo "Root directory contents:"
+          ls -la
+
+      - name: List files in api-gateway directory
+        run: |
+          echo "Contents of api-gateway directory:"
+          ls -la api-gateway
+
+      - name: Make executable
+        run: chmod +x api-gateway
+
       - name: Determine changed services
         id: changed-services
         run: |
@@ -162,7 +175,7 @@ jobs:
                 --namespace ${{ secrets.KUBE_NAMESPACE }} \
                 --values ./api-gateway/k8s/values.yaml \
                 --values "$VALUES_FILE" \
-                --set image.tag=${IMAGE_TAG}
+                # --set image.tag=${IMAGE_TAG}
             else
               echo "Values file not found: $VALUES_FILE"
               exit 1
