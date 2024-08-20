@@ -41,13 +41,24 @@ jobs:
       - name: Determine changed services
         id: changed-services
         run: |
+          # Get the list of changed files
           changes=$(git diff --name-only HEAD^ HEAD || true) # Handle the case when HEAD^ doesn't exist
-          echo "CHANGED_FILES<<EOF" >> $GITHUB_ENV
-          echo "$changes" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
+          
+          # Echo changed files for debugging
+          echo "Changed files:"
+          echo "$changes"
+          
+          # Determine changed services
+          if echo "$changes" | grep -q 'api-gateway'; then
+            echo "api-gateway" >> $GITHUB_ENV
+          fi
+          if echo "$changes" | grep -q 'auth-service'; then
+            echo "auth-service" >> $GITHUB_ENV
+          fi
 
       - name: Debug CHANGED_FILES
-        run: echo "$CHANGED_FILES"
+        run: |
+          echo "Changed services: ${{ env.api-gateway }} ${{ env.auth-service }}"
 
       - name: Login to Docker Hub
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login ${{ secrets.DOCKER_REGISTRY }} -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
