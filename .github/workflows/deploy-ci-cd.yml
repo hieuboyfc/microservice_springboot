@@ -36,14 +36,14 @@ jobs:
 
           # Build and push Docker image for api-gateway if there are changes
           if echo "$changes" | grep -q 'api-gateway'; then
-            docker build -t ${{ secrets.REGISTRY }}/api-gateway-${{ ENVIRONMENT }}:${{ github.sha }} ./microservice_springboot/api-gateway
-            docker push ${{ secrets.REGISTRY }}/api-gateway-${{ ENVIRONMENT }}:${{ github.sha }}
+            docker build -t ${{ secrets.REGISTRY }}/api-gateway-${{ env.ENVIRONMENT }}:${{ github.sha }} ./microservice_springboot/api-gateway
+            docker push ${{ secrets.REGISTRY }}/api-gateway-${{ env.ENVIRONMENT }}:${{ github.sha }}
           fi
           
           # Build and push Docker image for auth-service if there are changes
           if echo "$changes" | grep -q 'auth-service'; then
-            docker build -t ${{ secrets.REGISTRY }}/auth-service-${{ ENVIRONMENT }}:${{ github.sha }} ./microservice_springboot/auth-service
-            docker push ${{ secrets.REGISTRY }}/auth-service-${{ ENVIRONMENT }}:${{ github.sha }}
+            docker build -t ${{ secrets.REGISTRY }}/auth-service-${{ env.ENVIRONMENT }}:${{ github.sha }} ./microservice_springboot/auth-service
+            docker push ${{ secrets.REGISTRY }}/auth-service-${{ env.ENVIRONMENT }}:${{ github.sha }}
           fi
 
   deploy:
