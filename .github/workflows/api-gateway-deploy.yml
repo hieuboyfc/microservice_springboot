@@ -151,6 +151,9 @@ jobs:
           mkdir -p $HOME/.kube
           echo "${{ env.KUBE_CONFIG }}" > $HOME/.kube/config
 
+      - name: Set KUBECONFIG environment variable
+        run: echo "KUBECONFIG=$HOME/.kube/config" >> $GITHUB_ENV
+
       - name: Deploy to Kubernetes
         if: env.CHANGED_SERVICES == 'api-gateway'
         run: |
