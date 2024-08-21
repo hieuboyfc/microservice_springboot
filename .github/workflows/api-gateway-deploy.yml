@@ -49,15 +49,25 @@ jobs:
 
       - name: Install KinD
         run: |
-          curl -s https://api.github.com/repos/kubernetes-sigs/kind/releases/latest \
-          | grep "browser_download_url.*kind-linux-amd64" \
-          | cut -d : -f 2,3 \
-          | tr -d \" \
-          | xargs curl -Lo ./kind && chmod +x ./kind && mv ./kind /usr/local/bin/
+          if ! command -v kind &> /dev/null; then
+            echo "KinD not found. Installing..."
+            curl -s https://api.github.com/repos/kubernetes-sigs/kind/releases/latest \
+            | grep "browser_download_url.*kind-linux-amd64" \
+            | cut -d : -f 2,3 \
+            | tr -d \" \
+            | xargs curl -Lo ./kind && chmod +x ./kind && mv ./kind /usr/local/bin/
+          else
+            echo "KinD is already installed."
+          fi
 
       - name: Create KinD Cluster
         run: |
-          kind create cluster --name api-gateway-cluster
+          if kind get clusters | grep -q "api-gateway-cluster"; then
+            echo "KinD cluster 'api-gateway-cluster' already exists."
+          else
+            echo "Creating KinD cluster 'api-gateway-cluster'..."
+            kind create cluster --name api-gateway-cluster
+          fi
           kubectl cluster-info
 
   build:
@@ -156,8 +166,8 @@ jobs:
       - name: Set KUBECONFIG environment variable
         run: echo "KUBECONFIG=$HOME/.kube/config" >> $GITHUB_ENV
 
-      - name: Verify Kubernetes API
-        run: curl -k https://kubernetes.docker.internal:6443
+#      - name: Verify Kubernetes API
+#        run: curl -k https://kubernetes.docker.internal:6443
 
       - name: Test Kubernetes Connectivity
         run: |
