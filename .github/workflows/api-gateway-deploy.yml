@@ -154,6 +154,10 @@ jobs:
       - name: Set KUBECONFIG environment variable
         run: echo "KUBECONFIG=$HOME/.kube/config" >> $GITHUB_ENV
 
+      - name: Test Kubernetes Connectivity
+        run: |
+          kubectl --kubeconfig=$HOME/.kube/config cluster-info
+
       - name: Deploy to Kubernetes
         if: env.CHANGED_SERVICES == 'api-gateway'
         run: |
