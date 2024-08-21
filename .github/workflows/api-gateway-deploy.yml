@@ -59,7 +59,7 @@ jobs:
       - name: Set up Kubernetes CLI
         uses: Azure/setup-kubectl@v1
         with:
-          version: '1.27.5'
+          version: 'latest'
 
       - name: Set up Helm
         uses: azure/setup-helm@v1
