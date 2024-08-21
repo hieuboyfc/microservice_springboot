@@ -91,6 +91,11 @@ jobs:
     needs: setup
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
       - name: Change directory to api-gateway
         run: cd api-gateway || exit 1 # Ensure directory exists
 
@@ -144,6 +149,11 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
       - name: Change directory to api-gateway
         run: cd api-gateway || exit 1 # Ensure directory exists
 
