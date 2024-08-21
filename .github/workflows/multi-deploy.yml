@@ -16,6 +16,10 @@ jobs:
   multi-pipeline:
     name: CI/CD Multi Pipeline (Kubernates)
     runs-on: ubuntu-latest
+    env:
+      PATH_TOKEN: ${{ secrets.PATH_TOKEN }}
+      GIT_REPO: ${{ github.repository }}
+      GIT_REF: ${{ github.ref }}
     permissions:
       actions: write
       contents: write
@@ -76,22 +80,22 @@ jobs:
         if: contains(env.CHANGED_SERVICES, 'api-gateway')
         run: |
           echo "Triggering api-gateway CI/CD workflow"
-          echo PATH_TOKEN: ${{ secrets.PATH_TOKEN }}, ${{ github.repository }}, ${{ github.ref }}
+          echo PATH_TOKEN: ${{ env.PATH_TOKEN }}, ${{ env.GIT_REPO }}, ${{ env.GIT_REF }}
           
           curl -X POST \
-          -H "Authorization: token ${{ secrets.PATH_TOKEN }}" \
+          -H "Authorization: token ${{ env.PATH_TOKEN }}" \
           -H "Accept: application/vnd.github.v3+json" \
-          -d '{"ref": "${{ github.ref }}", "inputs": {"service": "${{ env.CHANGED_SERVICES }}" }}' \
-          https://api.github.com/repos/${{ github.repository }}/actions/workflows/api-gateway-deploy.yml/dispatches
+          -d '{"ref": "${{ env.GIT_REF }}", "inputs": {"service": "${{ env.CHANGED_SERVICES }}" }}' \
+          https://api.github.com/repos/${{ env.GIT_REPO }}/actions/workflows/api-gateway-deploy.yml/dispatches
 
       - name: Trigger auth-service CI/CD
         if: contains(env.CHANGED_SERVICES, 'auth-service')
         run: |
           echo "Triggering auth-service CI/CD workflow"
-          echo PATH_TOKEN: ${{ secrets.PATH_TOKEN }}, ${{ github.repository }}, ${{ github.ref }}
+          echo PATH_TOKEN: ${{ env.PATH_TOKEN }}, ${{ env.GIT_REPO }}, ${{ env.GIT_REF }}
           
           curl -X POST \
-          -H "Authorization: token ${{ secrets.PATH_TOKEN }}" \
+          -H "Authorization: token ${{ env.PATH_TOKEN }}" \
           -H "Accept: application/vnd.github.v3+json" \
-          -d '{"ref": "${{ github.ref }}", "inputs": {"service": "${{ env.CHANGED_SERVICES }}"}}' \
-          https://api.github.com/repos/${{ github.repository }}/actions/workflows/auth-service-deploy.yml/dispatches
+          -d '{"ref": "${{ env.GIT_REF }}", "inputs": {"service": "${{ env.CHANGED_SERVICES }}"}}' \
+          https://api.github.com/repos/${{ env.GIT_REPO }}/actions/workflows/auth-service-deploy.yml/dispatches

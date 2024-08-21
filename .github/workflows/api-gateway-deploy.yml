@@ -21,6 +21,13 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      IMAGE_TAG: '1.0.0' # Example static tag or use ${{ github.sha }}
+      ENVIRONMENT: ${{ github.ref == 'refs/heads/prod' && 'prod' || (github.ref == 'refs/heads/qas' && 'qas' || 'dev') }}
+      REGISTRY: ${{ secrets.REGISTRY }}
+      DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -54,39 +61,39 @@ jobs:
           echo "Changed services: $CHANGED_SERVICES"
 
       - name: Login to Docker Hub
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login ${{ secrets.DOCKER_REGISTRY }} -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+        run: echo "${{ env.DOCKER_PASSWORD }}" | docker login ${{ env.DOCKER_REGISTRY }} -u "${{ env.DOCKER_USERNAME }}" --password-stdin
 
       - name: Build and push Docker images
-        env:
-          IMAGE_TAG: '1.0.0' # Example static tag or use ${{ github.sha }}
-          ENVIRONMENT: ${{ github.ref == 'refs/heads/prod' && 'prod' || (github.ref == 'refs/heads/qas' && 'qas' || 'dev') }}
+        if: env.CHANGED_SERVICES == 'api-gateway'
         run: |
-          # Build and push Docker image for api-gateway if there are changes
-          if echo "$CHANGED_SERVICES" | grep -q 'api-gateway'; then
-            echo "Building gradle api-gateway"
-            cd api-gateway || exit 1 # Ensure directory exists
-            # Run Gradle build
-            ./gradlew build || exit 1
+          echo "Building gradle api-gateway"
+          cd api-gateway || exit 1 # Ensure directory exists
+          # Run Gradle build
+          ./gradlew build || exit 1
 
-            # Verify if JAR exists
-            ls -l build/libs/
+          # Verify if JAR exists
+          ls -l build/libs/
+        
+          echo "Building and pushing docker api-gateway"
+          echo REGISTRY: ${{ env.REGISTRY }}, ENVIRONMENT: ${{ env.ENVIRONMENT }}, IMAGE_TAG: ${{ env.IMAGE_TAG }}
           
-            echo "Building and pushing docker api-gateway"
-            echo REGISTRY: ${{ secrets.REGISTRY }}, ENVIRONMENT: ${{ env.ENVIRONMENT }}, IMAGE_TAG: ${{ env.IMAGE_TAG }}
-            
-            # Build Docker image
-            docker build -t ${{ secrets.REGISTRY }}/api-gateway-${{ env.ENVIRONMENT }}:${{ env.IMAGE_TAG }} -f Dockerfile .
-            
-            # Push Docker image
-            docker push ${{ secrets.REGISTRY }}/api-gateway-${{ env.ENVIRONMENT }}:${{ env.IMAGE_TAG }}
-            
-            # List Docker images
-            docker images
-          fi
+          # Build Docker image
+          docker build -t ${{ env.REGISTRY }}/api-gateway-${{ env.ENVIRONMENT }}:${{ env.IMAGE_TAG }} -f Dockerfile .
+          
+          # Push Docker image
+          docker push ${{ env.REGISTRY }}/api-gateway-${{ env.ENVIRONMENT }}:${{ env.IMAGE_TAG }}
+          
+          # List Docker images
+          docker images
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    env:
+      IMAGE_TAG: '1.0.0' # Example static tag or use ${{ github.sha }}
+      ENVIRONMENT: ${{ github.ref == 'refs/heads/prod' && 'prod' || (github.ref == 'refs/heads/qas' && 'qas' || 'dev') }}
+      KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
+      KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -142,30 +149,26 @@ jobs:
       - name: Create kubeconfig
         run: |
           mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBE_CONFIG }}" > $HOME/.kube/config
+          echo "${{ env.KUBE_CONFIG }}" > $HOME/.kube/config
 
       - name: Deploy to Kubernetes
-        env:
-          IMAGE_TAG: '1.0.0' # Example static tag or use ${{ github.sha }}
-          ENVIRONMENT: ${{ github.ref == 'refs/heads/prod' && 'prod' || (github.ref == 'refs/heads/qas' && 'qas' || 'dev') }}
-          NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
         run: |
           # Deploy api-gateway if there are changes
           if echo "$CHANGED_SERVICES" | grep -q 'api-gateway'; then
-            echo "Deploying api-gateway to environment: $ENVIRONMENT, namespace: $NAMESPACE"
+            echo "Deploying api-gateway to environment: ${{ env.ENVIRONMENT }}, namespace: ${{ env.KUBE_NAMESPACE }}"
           
             cd api-gateway/k8s || exit 1 # Ensure directory exists        
           
             # Verify if the values file exists
-            VALUES_FILE="./values-${ENVIRONMENT}.yaml"
+            VALUES_FILE="./values-${{ env.ENVIRONMENT }}.yaml"
             if [ -f "$VALUES_FILE" ]; then
-              echo "Applying Helm chart, namespace: $NAMESPACE"
+              echo "Applying Helm chart, namespace: ${{ env.KUBE_NAMESPACE }}"
           
               helm upgrade --install api-gateway . \
-              --namespace "$NAMESPACE" \
+              --namespace ${{ env.KUBE_NAMESPACE }} \
               --values values.yaml \
               --values "$VALUES_FILE" \
-              # --set image.tag="$IMAGE_TAG"
+              # --set image.tag=${{ env.IMAGE_TAG }}
             else
               echo "Values file not found: $VALUES_FILE"
               exit 1
@@ -175,7 +178,7 @@ jobs:
       - name: Check deployment status
         run: |
           if echo "$CHANGED_SERVICES" | grep -q 'api-gateway'; then
-            kubectl rollout status deployment/api-gateway --namespace=${{ secrets.KUBE_NAMESPACE }} || true
+            kubectl rollout status deployment/api-gateway --namespace=${{ env.KUBE_NAMESPACE }} || true
           fi
 
 # REGISTRY: Địa chỉ Docker registry (ví dụ: docker.io/your-username).
