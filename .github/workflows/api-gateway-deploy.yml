@@ -80,20 +80,8 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: List root directory
-        run: ls -la
-
-      - name: Check existence of api-gateway directory
-        run: |
-          if [ -d "api-gateway" ]; then
-            echo "api-gateway directory exists"
-          else
-            echo "api-gateway directory does not exist"
-            exit 1
-          fi
-
-      - name: List contents of api-gateway directory
-        run: ls -la api-gateway
+      - name: Change directory to api-gateway
+        run: cd api-gateway || exit 1 # Ensure directory exists
 
       - name: Make gradlew executable
         run: chmod +x api-gateway/gradlew
@@ -145,11 +133,16 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Make executable
-        run: chmod +x api-gateway
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
 
       - name: Change directory to api-gateway
-        run: cd api-gateway
+        run: cd api-gateway || exit 1 # Ensure directory exists
+
+      - name: Make executable
+        run: chmod +x api-gateway
 
       - name: Debug CHANGED_FILES
         run: |
