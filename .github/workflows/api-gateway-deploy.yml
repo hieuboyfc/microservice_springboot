@@ -152,27 +152,25 @@ jobs:
           echo "${{ env.KUBE_CONFIG }}" > $HOME/.kube/config
 
       - name: Deploy to Kubernetes
+        if: env.CHANGED_SERVICES == 'api-gateway'
         run: |
-          # Deploy api-gateway if there are changes
-          if echo "$CHANGED_SERVICES" | grep -q 'api-gateway'; then
-            echo "Deploying api-gateway to environment: ${{ env.ENVIRONMENT }}, namespace: ${{ env.KUBE_NAMESPACE }}"
-          
-            cd api-gateway/k8s || exit 1 # Ensure directory exists        
-          
-            # Verify if the values file exists
-            VALUES_FILE="./values-${{ env.ENVIRONMENT }}.yaml"
-            if [ -f "$VALUES_FILE" ]; then
-              echo "Applying Helm chart, namespace: ${{ env.KUBE_NAMESPACE }}"
-          
-              helm upgrade --install api-gateway . \
-              --namespace ${{ env.KUBE_NAMESPACE }} \
-              --values values.yaml \
-              --values "$VALUES_FILE" \
-              # --set image.tag=${{ env.IMAGE_TAG }}
-            else
-              echo "Values file not found: $VALUES_FILE"
-              exit 1
-            fi
+          echo "Deploying api-gateway to environment: ${{ env.ENVIRONMENT }}, namespace: ${{ env.KUBE_NAMESPACE }}"
+        
+          cd api-gateway/k8s || exit 1 # Ensure directory exists        
+        
+          # Verify if the values file exists
+          VALUES_FILE="./values-${{ env.ENVIRONMENT }}.yaml"
+          if [ -f "$VALUES_FILE" ]; then
+            echo "Applying Helm chart, namespace: ${{ env.KUBE_NAMESPACE }}"
+        
+            helm upgrade --install api-gateway . \
+            --namespace ${{ env.KUBE_NAMESPACE }} \
+            --values values.yaml \
+            --values "$VALUES_FILE" \
+            # --set image.tag=${{ env.IMAGE_TAG }}
+          else
+            echo "Values file not found: $VALUES_FILE"
+            exit 1
           fi
 
       - name: Check deployment status
