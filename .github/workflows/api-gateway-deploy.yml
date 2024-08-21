@@ -18,6 +18,16 @@ on:
       - qas
       - prod
 
+env:
+  IMAGE_TAG: '1.0.0'  # Example static tag or use ${{ github.sha }}
+  REGISTRY: ${{ secrets.REGISTRY }}
+  DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
+  DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+  DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+  KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
+  KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+  ENVIRONMENT: ${{ github.ref == 'refs/heads/prod' && 'prod' || (github.ref == 'refs/heads/qas' && 'qas' || 'dev') }}
+
 jobs:
   setup:
     runs-on: ubuntu-latest
@@ -72,13 +82,6 @@ jobs:
   build:
     needs: setup
     runs-on: ubuntu-latest
-    env:
-      IMAGE_TAG: '1.0.0' # Example static tag or use ${{ github.sha }}
-      ENVIRONMENT: ${{ github.ref == 'refs/heads/prod' && 'prod' || (github.ref == 'refs/heads/qas' && 'qas' || 'dev') }}
-      REGISTRY: ${{ secrets.REGISTRY }}
-      DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
-      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
     steps:
       - name: Make gradlew executable
         run: chmod +x api-gateway/gradlew
@@ -129,11 +132,6 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    env:
-      IMAGE_TAG: '1.0.0' # Example static tag or use ${{ github.sha }}
-      ENVIRONMENT: ${{ github.ref == 'refs/heads/prod' && 'prod' || (github.ref == 'refs/heads/qas' && 'qas' || 'dev') }}
-      KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
-      KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
     steps:
       - name: Make executable
         run: chmod +x api-gateway
