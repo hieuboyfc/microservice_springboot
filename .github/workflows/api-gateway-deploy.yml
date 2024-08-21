@@ -149,7 +149,7 @@ jobs:
       - name: Create kubeconfig
         run: |
           mkdir -p $HOME/.kube
-          echo "Kubeconfig: ${{ env.KUBE_CONFIG }}" | base64 -d > $HOME/.kube/config
+          echo "Kubeconfig: ${{ env.KUBE_CONFIG }}" > $HOME/.kube/config
 
       - name: Deploy to Kubernetes
         if: env.CHANGED_SERVICES == 'api-gateway'
