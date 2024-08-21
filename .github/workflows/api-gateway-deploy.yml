@@ -112,7 +112,7 @@ jobs:
           echo "CHANGED_SERVICES=$CHANGED_SERVICES" >> $GITHUB_ENV
 
       - name: Debug CHANGED_FILES
-        run:
+        run: |
           echo "Changed services: $CHANGED_SERVICES"
 
       - name: Login to Docker Hub
