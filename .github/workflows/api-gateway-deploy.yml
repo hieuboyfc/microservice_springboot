@@ -163,11 +163,14 @@ jobs:
           if [ -f "$VALUES_FILE" ]; then
             echo "Applying Helm chart, namespace: ${{ env.KUBE_NAMESPACE }}"
 
+            echo "---> Helm List all Namespaces"
             helm list --all-namespaces
 
-            helm list --namespace microservice-springboot
+            echo "---> Helm List in Namespaces: ${{ env.KUBE_NAMESPACE }}"
+            helm list --namespace ${{ env.KUBE_NAMESPACE }}
 
-            kubectl get services -n microservice-springboot
+            echo "---> Kubectl get Services"
+            kubectl get services -n ${{ env.KUBE_NAMESPACE }}
 
             helm upgrade --install api-gateway . \
             --namespace ${{ env.KUBE_NAMESPACE }} \
