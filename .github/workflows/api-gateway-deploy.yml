@@ -48,14 +48,6 @@ jobs:
         with:
           version: 'v0.11.2'
 
-#      - name: Cache Docker layers
-#        uses: actions/cache@v2
-#        with:
-#          path: /tmp/.buildx-cache
-#          key: ${{ runner.os }}-buildx-${{ github.sha }}
-#          restore-keys: |
-#            ${{ runner.os }}-buildx-
-
       - name: Set up Kubernetes CLI
         uses: Azure/setup-kubectl@v1
         with:
@@ -83,12 +75,25 @@ jobs:
     needs: setup
     runs-on: ubuntu-latest
     steps:
-      - name: List directory contents
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
+      - name: List root directory
+        run: ls -la
+
+      - name: Check existence of api-gateway directory
         run: |
-          echo "Listing root directory"
-          ls -la
-          echo "Listing contents of api-gateway directory"
-          ls -la api-gateway
+          if [ -d "api-gateway" ]; then
+            echo "api-gateway directory exists"
+          else
+            echo "api-gateway directory does not exist"
+            exit 1
+          fi
+
+      - name: List contents of api-gateway directory
+        run: ls -la api-gateway
 
       - name: Make gradlew executable
         run: chmod +x api-gateway/gradlew
@@ -107,7 +112,7 @@ jobs:
           echo "CHANGED_SERVICES=$CHANGED_SERVICES" >> $GITHUB_ENV
 
       - name: Debug CHANGED_FILES
-        run: |
+        run:
           echo "Changed services: $CHANGED_SERVICES"
 
       - name: Login to Docker Hub
@@ -123,7 +128,7 @@ jobs:
 
           # Verify if JAR exists
           ls -l build/libs/
-        
+          
           echo "Building and pushing docker api-gateway"
           echo REGISTRY: ${{ env.REGISTRY }}, ENVIRONMENT: ${{ env.ENVIRONMENT }}, IMAGE_TAG: ${{ env.IMAGE_TAG }}
           
@@ -147,7 +152,7 @@ jobs:
         run: cd api-gateway
 
       - name: Debug CHANGED_FILES
-        run: |
+        run:
           echo "Changed services: $CHANGED_SERVICES"
 
       - name: Create kubeconfig
@@ -159,8 +164,7 @@ jobs:
         run: echo "KUBECONFIG=$HOME/.kube/config" >> $GITHUB_ENV
 
       - name: Verify Kubernetes API
-        run: |
-          curl -k https://kubernetes.docker.internal:6443
+        run: curl -k https://kubernetes.docker.internal:6443
 
       - name: Test Kubernetes Connectivity
         run: |
@@ -170,9 +174,9 @@ jobs:
         if: env.CHANGED_SERVICES == 'api-gateway'
         run: |
           echo "Deploying api-gateway to environment: ${{ env.ENVIRONMENT }}, namespace: ${{ env.KUBE_NAMESPACE }}"
-        
+          
           cd api-gateway/k8s || exit 1 # Ensure directory exists        
-        
+          
           # Verify if the values file exists
           VALUES_FILE="./values-${{ env.ENVIRONMENT }}.yaml"
           if [ -f "$VALUES_FILE" ]; then
@@ -202,12 +206,3 @@ jobs:
         if: env.CHANGED_SERVICES == 'api-gateway'
         run: |
           kubectl rollout status deployment/api-gateway --namespace=${{ env.KUBE_NAMESPACE }} || true
-
-# REGISTRY: Địa chỉ Docker registry (ví dụ: docker.io/your-username).
-# KUBE_CLUSTER_NAME: Tên cluster Kubernetes.
-# KUBE_SERVER: Địa chỉ API server của Kubernetes.
-# KUBE_CA_CERT: Chứng chỉ CA của Kubernetes (base64 encoded).
-# KUBE_USER: Tên người dùng Kubernetes.
-# KUBE_TOKEN: Token người dùng Kubernetes.
-# KUBE_CONTEXT: Tên context Kubernetes.
-# KUBE_NAMESPACE: Namespace Kubernetes để triển khai ứng dụng.
