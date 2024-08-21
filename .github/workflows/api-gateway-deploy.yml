@@ -152,7 +152,7 @@ jobs:
         run: cd api-gateway
 
       - name: Debug CHANGED_FILES
-        run:
+        run: |
           echo "Changed services: $CHANGED_SERVICES"
 
       - name: Create kubeconfig
