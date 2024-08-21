@@ -168,6 +168,12 @@ jobs:
             helm list --namespace microservice-springboot
                
             kubectl get services -n microservice-springboot
+        
+            helm upgrade --install api-gateway . \
+            --namespace ${{ env.KUBE_NAMESPACE }} \
+            --values values.yaml \
+            --values "$VALUES_FILE" \
+            --set image.tag=${{ env.IMAGE_TAG }}
           else
             echo "Values file not found: $VALUES_FILE"
             exit 1
