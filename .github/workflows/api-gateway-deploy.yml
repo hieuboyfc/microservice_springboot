@@ -37,6 +37,13 @@ jobs:
         with:
           fetch-depth: 2
 
+      - name: List directory contents
+        run: |
+          echo "Listing root directory"
+          ls -la
+          echo "Listing contents of api-gateway directory"
+          ls -la api-gateway
+
       - name: Set up JDK 21
         uses: actions/setup-java@v3
         with:
@@ -48,13 +55,13 @@ jobs:
         with:
           version: 'v0.11.2'
 
-      - name: Cache Docker layers
-        uses: actions/cache@v2
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
+#      - name: Cache Docker layers
+#        uses: actions/cache@v2
+#        with:
+#          path: /tmp/.buildx-cache
+#          key: ${{ runner.os }}-buildx-${{ github.sha }}
+#          restore-keys: |
+#            ${{ runner.os }}-buildx-
 
       - name: Set up Kubernetes CLI
         uses: Azure/setup-kubectl@v1
@@ -83,9 +90,6 @@ jobs:
     needs: setup
     runs-on: ubuntu-latest
     steps:
-      - name: List contents of api-gateway directory
-        run: ls -la api-gateway
-
       - name: Make gradlew executable
         run: chmod +x api-gateway/gradlew
 
