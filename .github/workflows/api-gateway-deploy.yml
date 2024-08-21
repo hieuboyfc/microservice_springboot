@@ -37,33 +37,6 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: Cache Gradle dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-
-      - name: Set up JDK 21
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '21'
-
-      - name: Cache Docker layers
-        uses: actions/cache@v3
-        with:
-          path: /tmp/docker
-          key: ${{ runner.os }}-docker-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-docker-
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-        with:
-          version: 'v0.11.2'
-
       - name: Set up Kubernetes CLI
         uses: Azure/setup-kubectl@v1
         with:
@@ -95,6 +68,17 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 2
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+        with:
+          version: 'v0.11.2'
 
       - name: Change directory to api-gateway
         run: cd api-gateway || exit 1 # Ensure directory exists
