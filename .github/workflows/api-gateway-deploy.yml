@@ -154,9 +154,22 @@ jobs:
       - name: Set KUBECONFIG environment variable
         run: echo "KUBECONFIG=$HOME/.kube/config" >> $GITHUB_ENV
 
+      - name: Install KinD
+        run: |
+          curl -s https://api.github.com/repos/kubernetes-sigs/kind/releases/latest \
+          | grep "browser_download_url.*kind-linux-amd64" \
+          | cut -d : -f 2,3 \
+          | tr -d \" \
+          | xargs curl -Lo ./kind && chmod +x ./kind && mv ./kind /usr/local/bin/
+
+      - name: Create KinD Cluster
+        run: |
+          kind create cluster --name my-cluster
+          kubectl cluster-info
+
       - name: Verify Kubernetes API
         run: |
-          curl -k https://localhost:6443/api
+          curl -k https://kubernetes.docker.internal:6443
 
       - name: Test Kubernetes Connectivity
         run: |
