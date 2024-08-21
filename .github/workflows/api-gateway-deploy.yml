@@ -48,6 +48,14 @@ jobs:
         with:
           version: 'v0.11.2'
 
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
       - name: Set up Kubernetes CLI
         uses: Azure/setup-kubectl@v1
         with:
@@ -75,6 +83,9 @@ jobs:
     needs: setup
     runs-on: ubuntu-latest
     steps:
+      - name: List contents of api-gateway directory
+        run: ls -la api-gateway
+
       - name: Make gradlew executable
         run: chmod +x api-gateway/gradlew
 
