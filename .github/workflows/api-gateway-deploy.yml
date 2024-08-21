@@ -48,14 +48,6 @@ jobs:
         with:
           version: 'v0.11.2'
 
-      - name: Cache Docker layers
-        uses: actions/cache@v2
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-
       - name: Set up Kubernetes CLI
         uses: Azure/setup-kubectl@v1
         with:
