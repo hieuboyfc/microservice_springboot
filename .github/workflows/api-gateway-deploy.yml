@@ -175,6 +175,7 @@ jobs:
             echo "---> Kubectl get Services"
             kubectl get services -n ${{ env.KUBE_NAMESPACE }}
 
+            echo "---> Kubectl Upgrade"
             helm upgrade --install api-gateway . \
             --namespace ${{ env.KUBE_NAMESPACE }} \
             --values values.yaml \
