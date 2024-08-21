@@ -121,10 +121,10 @@ jobs:
           echo REGISTRY: ${{ env.REGISTRY }}, ENVIRONMENT: ${{ env.ENVIRONMENT }}, IMAGE_TAG: ${{ env.IMAGE_TAG }}
           
           # Build Docker image
-          docker build -t ${{ env.REGISTRY }}/api-gateway-${{ env.ENVIRONMENT }}:${{ env.IMAGE_TAG }} -f Dockerfile .
+          # docker build -t ${{ env.REGISTRY }}/api-gateway-${{ env.ENVIRONMENT }}:${{ env.IMAGE_TAG }} -f Dockerfile .
           
           # Push Docker image
-          docker push ${{ env.REGISTRY }}/api-gateway-${{ env.ENVIRONMENT }}:${{ env.IMAGE_TAG }}
+          # docker push ${{ env.REGISTRY }}/api-gateway-${{ env.ENVIRONMENT }}:${{ env.IMAGE_TAG }}
           
           # List Docker images
           docker images
