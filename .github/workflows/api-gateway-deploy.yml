@@ -1,0 +1,191 @@
+name: CI/CD Deploy to Kubernetes (api-gateway)
+
+on:
+  workflow_dispatch:
+    inputs:
+      service:
+        description: 'The service to deploy'
+        required: true
+        default: 'api-gateway'
+  push:
+    branches:
+      - dev
+      - qas
+      - prod
+  pull_request:
+    branches:
+      - dev
+      - qas
+      - prod
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_TAG: '1.0.0' # Example static tag or use ${{ github.sha }}
+      ENVIRONMENT: ${{ github.ref == 'refs/heads/prod' && 'prod' || (github.ref == 'refs/heads/qas' && 'qas' || 'dev') }}
+      REGISTRY: ${{ secrets.REGISTRY }}
+      DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Make gradlew executable
+        run: chmod +x api-gateway/gradlew
+
+      - name: Determine changed services
+        id: changed-services
+        run: |
+          PREVIOUS_SHA=$(git rev-parse HEAD^ || echo "No previous commit")
+          changes=$(git diff --name-only $PREVIOUS_SHA HEAD || true)
+          echo "Changed files:"
+          echo "$changes"
+          CHANGED_SERVICES=""
+          if echo "$changes" | grep -q '^api-gateway/'; then
+            CHANGED_SERVICES="api-gateway"
+          fi
+          echo "CHANGED_SERVICES=$CHANGED_SERVICES" >> $GITHUB_ENV
+
+      - name: Debug CHANGED_FILES
+        run: |
+          echo "Changed services: $CHANGED_SERVICES"
+
+      - name: Login to Docker Hub
+        run: echo "${{ env.DOCKER_PASSWORD }}" | docker login ${{ env.DOCKER_REGISTRY }} -u "${{ env.DOCKER_USERNAME }}" --password-stdin
+
+      - name: Build and push Docker images
+        if: env.CHANGED_SERVICES == 'api-gateway'
+        run: |
+          echo "Building gradle api-gateway"
+          cd api-gateway || exit 1 # Ensure directory exists
+          # Run Gradle build
+          ./gradlew build || exit 1
+
+          # Verify if JAR exists
+          ls -l build/libs/
+        
+          echo "Building and pushing docker api-gateway"
+          echo REGISTRY: ${{ env.REGISTRY }}, ENVIRONMENT: ${{ env.ENVIRONMENT }}, IMAGE_TAG: ${{ env.IMAGE_TAG }}
+          
+          # Build Docker image
+          docker build -t ${{ env.REGISTRY }}/api-gateway-${{ env.ENVIRONMENT }}:${{ env.IMAGE_TAG }} -f Dockerfile .
+          
+          # Push Docker image
+          docker push ${{ env.REGISTRY }}/api-gateway-${{ env.ENVIRONMENT }}:${{ env.IMAGE_TAG }}
+          
+          # List Docker images
+          docker images
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_TAG: '1.0.0' # Example static tag or use ${{ github.sha }}
+      ENVIRONMENT: ${{ github.ref == 'refs/heads/prod' && 'prod' || (github.ref == 'refs/heads/qas' && 'qas' || 'dev') }}
+      KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
+      KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+        with:
+          version: 'latest'
+
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: Set up Kubernetes CLI
+        uses: Azure/setup-kubectl@v1
+        with:
+          version: 'latest'
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v1
+        with:
+          version: 'latest'
+
+      - name: Make executable
+        run: chmod +x api-gateway
+
+      - name: Change directory to api-gateway
+        run: cd api-gateway
+
+      - name: Determine changed services
+        id: changed-services
+        run: |
+          PREVIOUS_SHA=$(git rev-parse HEAD^ || echo "No previous commit")
+          changes=$(git diff --name-only $PREVIOUS_SHA HEAD || true)
+          echo "Changed files:"
+          echo "$changes"
+          CHANGED_SERVICES=""
+          if echo "$changes" | grep -q '^api-gateway/'; then
+            CHANGED_SERVICES="api-gateway"
+          fi
+          echo "CHANGED_SERVICES=$CHANGED_SERVICES" >> $GITHUB_ENV
+
+      - name: Debug CHANGED_FILES
+        run: |
+          echo "Changed services: $CHANGED_SERVICES"
+
+      - name: Create kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ env.KUBE_CONFIG }}" > $HOME/.kube/config
+
+      - name: Deploy to Kubernetes
+        run: |
+          # Deploy api-gateway if there are changes
+          if echo "$CHANGED_SERVICES" | grep -q 'api-gateway'; then
+            echo "Deploying api-gateway to environment: ${{ env.ENVIRONMENT }}, namespace: ${{ env.KUBE_NAMESPACE }}"
+          
+            cd api-gateway/k8s || exit 1 # Ensure directory exists        
+          
+            # Verify if the values file exists
+            VALUES_FILE="./values-${{ env.ENVIRONMENT }}.yaml"
+            if [ -f "$VALUES_FILE" ]; then
+              echo "Applying Helm chart, namespace: ${{ env.KUBE_NAMESPACE }}"
+          
+              helm upgrade --install api-gateway . \
+              --namespace ${{ env.KUBE_NAMESPACE }} \
+              --values values.yaml \
+              --values "$VALUES_FILE" \
+              # --set image.tag=${{ env.IMAGE_TAG }}
+            else
+              echo "Values file not found: $VALUES_FILE"
+              exit 1
+            fi
+          fi
+
+      - name: Check deployment status
+        run: |
+          if echo "$CHANGED_SERVICES" | grep -q 'api-gateway'; then
+            kubectl rollout status deployment/api-gateway --namespace=${{ env.KUBE_NAMESPACE }} || true
+          fi
+
+# REGISTRY: Địa chỉ Docker registry (ví dụ: docker.io/your-username).
+# KUBE_CLUSTER_NAME: Tên cluster Kubernetes.
+# KUBE_SERVER: Địa chỉ API server của Kubernetes.
+# KUBE_CA_CERT: Chứng chỉ CA của Kubernetes (base64 encoded).
+# KUBE_USER: Tên người dùng Kubernetes.
+# KUBE_TOKEN: Token người dùng Kubernetes.
+# KUBE_CONTEXT: Tên context Kubernetes.
+# KUBE_NAMESPACE: Namespace Kubernetes để triển khai ứng dụng.

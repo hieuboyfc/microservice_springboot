@@ -1,0 +1,101 @@
+name: CI/CD Multi Pipeline (Kubernates)
+
+on:
+  push:
+    branches:
+      - dev
+      - qas
+      - prod
+  pull_request:
+    branches:
+      - dev
+      - qas
+      - prod
+
+jobs:
+  multi-pipeline:
+    name: CI/CD Multi Pipeline (Kubernates)
+    runs-on: ubuntu-latest
+    env:
+      PATH_TOKEN: ${{ secrets.PATH_TOKEN }}
+      GIT_REPO: ${{ github.repository }}
+      GIT_REF: ${{ github.ref }}
+    permissions:
+      actions: write
+      contents: write
+      issues: write
+      pull-requests: write
+      repository-projects: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
+      - name: Use PATH_TOKEN
+        run: |
+          echo PATH_TOKEN: ${{ secrets.PATH_TOKEN }}
+          curl -H "Authorization: token ${{ secrets.PATH_TOKEN }}" \
+               -H "Accept: application/vnd.github.v3+json" \
+               https://api.github.com/user
+
+      - name: Set up Git
+        run: |
+          git config --global user.name "ZimJi"
+          git config --global user.email "hieuboyfc@gmail.com"
+
+      - name: Determine changed services
+        id: determine-changes
+        run: |
+          # Fetch the previous commit SHA
+          PREVIOUS_SHA=$(git rev-parse HEAD^ || echo "No previous commit")
+          
+          # Get the list of changed files
+          changes=$(git diff --name-only $PREVIOUS_SHA HEAD || true)
+          
+          # Debug: Output changed files
+          echo "Changed files:"
+          echo "$changes"
+
+          # Initialize empty variable
+          CHANGED_SERVICES=""
+
+          # Determine changed services
+          if echo "$changes" | grep -q '^api-gateway/'; then
+            CHANGED_SERVICES="api-gateway"
+          fi
+
+          if echo "$changes" | grep -q '^auth-service/'; then
+            CHANGED_SERVICES="auth-service"
+          fi
+
+          # Export the result as an environment variable
+          echo "CHANGED_SERVICES=$CHANGED_SERVICES" >> $GITHUB_ENV
+
+      - name: Debug CHANGED_FILES
+        run: |
+          echo "Changed services: ${{ env.CHANGED_SERVICES }}"
+
+      - name: Trigger api-gateway CI/CD
+        if: contains(env.CHANGED_SERVICES, 'api-gateway')
+        run: |
+          echo "Triggering api-gateway CI/CD workflow"
+          echo PATH_TOKEN: ${{ env.PATH_TOKEN }}, ${{ env.GIT_REPO }}, ${{ env.GIT_REF }}
+          
+          curl -X POST \
+          -H "Authorization: token ${{ env.PATH_TOKEN }}" \
+          -H "Accept: application/vnd.github.v3+json" \
+          -d '{"ref": "${{ env.GIT_REF }}", "inputs": {"service": "${{ env.CHANGED_SERVICES }}" }}' \
+          https://api.github.com/repos/${{ env.GIT_REPO }}/actions/workflows/api-gateway-deploy.yml/dispatches
+
+      - name: Trigger auth-service CI/CD
+        if: contains(env.CHANGED_SERVICES, 'auth-service')
+        run: |
+          echo "Triggering auth-service CI/CD workflow"
+          echo PATH_TOKEN: ${{ env.PATH_TOKEN }}, ${{ env.GIT_REPO }}, ${{ env.GIT_REF }}
+          
+          curl -X POST \
+          -H "Authorization: token ${{ env.PATH_TOKEN }}" \
+          -H "Accept: application/vnd.github.v3+json" \
+          -d '{"ref": "${{ env.GIT_REF }}", "inputs": {"service": "${{ env.CHANGED_SERVICES }}"}}' \
+          https://api.github.com/repos/${{ env.GIT_REPO }}/actions/workflows/auth-service-deploy.yml/dispatches
