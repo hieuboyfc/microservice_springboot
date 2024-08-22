@@ -77,7 +77,7 @@ jobs:
         run: echo "${{ env.DOCKER_PASSWORD }}" | docker login ${{ env.DOCKER_REGISTRY }} -u "${{ env.DOCKER_USERNAME }}" --password-stdin
 
       - name: Build and push Docker images
-        if: env.CHANGED_SERVICES == '${{ env.APP_SERVICE }}'
+        if: env.CHANGED_SERVICES == env.APP_SERVICE
         run: |
           echo "Building gradle ${{ env.APP_SERVICE }}"
           cd ${{ env.APP_SERVICE }} || exit 1 # Ensure directory exists
@@ -184,7 +184,7 @@ jobs:
           kubectl cluster-info || echo "Kubernetes connectivity test failed"
 
       - name: Deploy to Kubernetes
-        if: env.CHANGED_SERVICES == '${{ env.APP_SERVICE }}'
+        if: env.CHANGED_SERVICES == env.APP_SERVICE
         run: |
           echo "Deploying ${{ env.APP_SERVICE }} to environment: ${{ env.ENVIRONMENT }}, namespace: ${{ env.KUBE_NAMESPACE }}"
           
@@ -216,6 +216,6 @@ jobs:
           fi
 
       - name: Check deployment status
-        if: env.CHANGED_SERVICES == '${{ env.APP_SERVICE }}'
+        if: env.CHANGED_SERVICES == env.APP_SERVICE
         run: |
           kubectl rollout status deployment/${{ env.APP_SERVICE }} --namespace=${{ env.KUBE_NAMESPACE }} || true
