@@ -110,7 +110,7 @@ jobs:
       - name: Set up Kubernetes CLI
         uses: Azure/setup-kubectl@v1
         with:
-          version: 'latest'
+          version: '1.24.0'
 
       - name: Set up Helm
         uses: azure/setup-helm@v1
@@ -144,6 +144,12 @@ jobs:
           mkdir -p $HOME/.kube
           echo "${{ env.KUBE_CONFIG }}" > $HOME/.kube/config
           kubectl config use-context docker-desktop
+          
+      - name: Verify kubectl version
+        run: kubectl version --client
+
+      - name: List Kubernetes nodes
+        run: kubectl get nodes
 
       - name: Test Kubernetes Connectivity
         run: |
