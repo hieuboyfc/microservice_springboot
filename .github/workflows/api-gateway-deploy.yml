@@ -126,6 +126,13 @@ jobs:
         run: |
           echo "Changed services: $CHANGED_SERVICES"
 
+      - name: Update /etc/hosts
+        run: |
+          echo "127.0.0.1    kubernetes.docker.internal" | sudo tee -a /etc/hosts
+
+      - name: Print /etc/hosts
+        run: cat /etc/hosts
+
       - name: Create Kubeconfig
         run: |
           mkdir -p $HOME/.kube
