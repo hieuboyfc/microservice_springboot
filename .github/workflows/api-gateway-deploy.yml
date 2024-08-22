@@ -108,7 +108,7 @@ jobs:
           fetch-depth: 2
 
       - name: Set up Kubernetes CLI
-        uses: azure/setup-kubectl@v2
+        uses: azure/setup-kubectl@v1
         with:
           version: 'latest'
 
