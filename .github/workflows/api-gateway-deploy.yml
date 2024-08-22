@@ -58,6 +58,7 @@ jobs:
             echo "Creating KinD cluster 'api-gateway-cluster'..."
             kind create cluster --name api-gateway-cluster
           fi
+          echo "---> cluster-info"
           kubectl cluster-info
 
   build:
