@@ -150,20 +150,20 @@ jobs:
 
       - name: Create KinD Cluster
         run: |
-          if kind get clusters | grep -q "${{ env.APP_SERVICE }}-cluster"; then
-            echo "KinD cluster '${{ env.APP_SERVICE }}-cluster' already exists."
+          if kind get clusters | grep -q "api-gateway-cluster"; then
+            echo "KinD cluster 'api-gateway-cluster' already exists."
           else
-            echo "Creating KinD cluster '${{ env.APP_SERVICE }}-cluster'..."
-            kind create cluster --name kind-${{ env.APP_SERVICE }}-cluster
+            echo "Creating KinD cluster 'api-gateway-cluster'..."
+            kind create cluster --name api-gateway-cluster
           fi
 
       - name: Set up Kubeconfig for KinD
         run: |
           mkdir -p $HOME/.kube
           echo "Exporting KinD Kubeconfig"
-          kind get kubeconfig --name ${{ env.APP_SERVICE }}-cluster > $HOME/.kube/config
-          kubectl config use-context ${{ env.APP_SERVICE }}-cluster
-          cat $HOME/.kube/config # Debug: Verify the Kubeconfig content
+          kind get kubeconfig --name api-gateway-cluster > $HOME/.kube/config
+          kubectl config use-context kind-api-gateway-cluster
+          cat $HOME/.kube/config # Debug: Verify the kubeconfig content
 
 #      - name: Check Kubernetes API Server Connectivity
 #        run: |
