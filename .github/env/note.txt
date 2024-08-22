@@ -1,0 +1,3 @@
+- CMD: docker run -it -e NGROK_AUTHTOKEN=2SE05Tj0wd0eohg6yDL8HdUTqao_3XRuRwm1JYkJoScm5p37D ngrok/ngrok http https://kubernetes.docker.internal:6443
+- CMD: type %USERPROFILE%\.kube\config
+- CMD: kubectl config view --minify --flatten > kubeconfig

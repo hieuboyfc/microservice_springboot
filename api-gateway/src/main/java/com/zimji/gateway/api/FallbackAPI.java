@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/fallback")
-public class FallbackAPI {
 
+public class FallbackAPI {
     @GetMapping
     public ResponseEntity<?> fallback() {
         BaseResponse<?> baseResponse = BaseResponse.builder()
