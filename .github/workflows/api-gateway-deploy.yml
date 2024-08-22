@@ -29,40 +29,7 @@ env:
   ENVIRONMENT: ${{ github.ref == 'refs/heads/prod' && 'prod' || (github.ref == 'refs/heads/qas' && 'qas' || 'dev') }}
 
 jobs:
-  setup:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 2
-
-      - name: Install KinD
-        run: |
-          if ! command -v kind &> /dev/null; then
-            echo "KinD not found. Installing..."
-            curl -s https://api.github.com/repos/kubernetes-sigs/kind/releases/latest \
-            | grep "browser_download_url.*kind-linux-amd64" \
-            | cut -d : -f 2,3 \
-            | tr -d \" \
-            | xargs curl -Lo ./kind && chmod +x ./kind && mv ./kind /usr/local/bin/
-          else
-            echo "KinD is already installed."
-          fi
-
-      - name: Create KinD Cluster
-        run: |
-          if kind get clusters | grep -q "api-gateway-cluster"; then
-            echo "KinD cluster 'api-gateway-cluster' already exists."
-          else
-            echo "Creating KinD cluster 'api-gateway-cluster'..."
-            kind create cluster --name api-gateway-cluster
-          fi
-          echo "---> cluster-info"
-          kubectl cluster-info
-
   build:
-    needs: setup
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -174,11 +141,35 @@ jobs:
 #        run: |
 #          kubectl --kubeconfig=$HOME/.kube/config cluster-info
 
-      - name: Set up Kubeconfig for KinD
+      - name: Install KinD
         run: |
+          if ! command -v kind &> /dev/null; then
+            echo "KinD not found. Installing..."
+            curl -s https://api.github.com/repos/kubernetes-sigs/kind/releases/latest \
+            | grep "browser_download_url.*kind-linux-amd64" \
+            | cut -d : -f 2,3 \
+            | tr -d \" \
+            | xargs curl -Lo ./kind && chmod +x ./kind && mv ./kind /usr/local/bin/
+          else
+            echo "KinD is already installed."
+          fi
+
+      - name: Create KinD Cluster
+        run: |
+          if kind get clusters | grep -q "api-gateway-cluster"; then
+            echo "KinD cluster 'api-gateway-cluster' already exists."
+          else
+            echo "Creating KinD cluster 'api-gateway-cluster'..."
+            kind create cluster --name api-gateway-cluster
+          fi
+
+      - name: Set up kubeconfig for KinD
+        run: |
+          mkdir -p $HOME/.kube
           echo "Exporting KinD kubeconfig"
           kind get kubeconfig --name api-gateway-cluster > $HOME/.kube/config
           kubectl config use-context kind-api-gateway-cluster
+          cat $HOME/.kube/config # Debug: Verify the kubeconfig content
 
       - name: Test Kubernetes Connectivity
         run: |
