@@ -82,7 +82,7 @@ jobs:
           echo "Building gradle ${{ env.APP_SERVICE }}"
           cd ${{ env.APP_SERVICE }} || exit 1 # Ensure directory exists
           # Run Gradle build
-          # ./gradlew build || exit 1
+          ./gradlew build || exit 1
 
           # Verify if JAR exists
           ls -l build/libs/
