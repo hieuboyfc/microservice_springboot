@@ -108,9 +108,9 @@ jobs:
           fetch-depth: 2
 
       - name: Set up Kubernetes CLI
-        uses: Azure/setup-kubectl@v1
+        uses: azure/setup-kubectl@v2
         with:
-          version: '1.24.0'
+          version: 'latest'
 
       - name: Set up Helm
         uses: azure/setup-helm@v1
