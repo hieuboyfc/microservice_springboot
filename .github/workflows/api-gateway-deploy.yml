@@ -108,12 +108,6 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: Install kubectl
-        run: |
-          curl -LO "https://dl.k8s.io/release/v1.26.0/bin/linux/amd64/kubectl"
-          chmod +x ./kubectl
-          sudo mv ./kubectl /usr/local/bin/kubectl
-
       - name: Set up Kubernetes CLI
         uses: azure/setup-kubectl@v1
         with:
@@ -141,6 +135,36 @@ jobs:
       - name: Print /etc/hosts
         run: cat /etc/hosts
 
+      - name: Install KinD
+        run: |
+          if ! command -v kind &> /dev/null; then
+            echo "KinD not found. Installing..."
+            curl -s https://api.github.com/repos/kubernetes-sigs/kind/releases/latest \
+            | grep "browser_download_url.*kind-linux-amd64" \
+            | cut -d : -f 2,3 \
+            | tr -d \" \
+            | xargs curl -Lo ./kind && chmod +x ./kind && mv ./kind /usr/local/bin/
+          else
+            echo "KinD is already installed."
+          fi
+
+      - name: Create KinD Cluster
+        run: |
+          if kind get clusters | grep -q "${{ env.APP_SERVICE }}-cluster"; then
+            echo "KinD cluster '${{ env.APP_SERVICE }}-cluster' already exists."
+          else
+            echo "Creating KinD cluster '${{ env.APP_SERVICE }}-cluster'..."
+            kind create cluster --name ${{ env.APP_SERVICE }}-cluster
+          fi
+
+      - name: Set up Kubeconfig for KinD
+        run: |
+          mkdir -p $HOME/.kube
+          echo "Exporting KinD Kubeconfig"
+          kind get kubeconfig --name ${{ env.APP_SERVICE }}-cluster > $HOME/.kube/config
+          kubectl config use-context ${{ env.APP_SERVICE }}-cluster
+          cat $HOME/.kube/config # Debug: Verify the Kubeconfig content
+
       - name: Check Kubernetes API Server Connectivity
         run: |
           echo "Pinging Kubernetes API Server: ${{ env.KUBE_API_SERVER }}"
@@ -152,58 +176,12 @@ jobs:
           echo "${{ env.KUBE_CONFIG }}" > $HOME/.kube/config
           kubectl config use-context docker-desktop
 
-      - name: Port forward to Kubernetes API
-        run: |
-          kubectl port-forward --address 0.0.0.0 svc/${{ env.APP_SERVICE }} 6443:6443 &
-          sleep 10  # Đợi một chút cho port-forward hoàn tất
-
-      - name: Test connection
-        run: |
-          curl -k https://localhost:6443
-
-      - name: Verify kubectl version
-        run: kubectl version --client
-
       - name: List Kubernetes nodes
         run: kubectl get nodes -v=10
 
       - name: Test Kubernetes Connectivity
         run: |
           kubectl cluster-info || echo "Kubernetes connectivity test failed"
-
-#      - name: Install KinD
-#        run: |
-#          if ! command -v kind &> /dev/null; then
-#            echo "KinD not found. Installing..."
-#            curl -s https://api.github.com/repos/kubernetes-sigs/kind/releases/latest \
-#            | grep "browser_download_url.*kind-linux-amd64" \
-#            | cut -d : -f 2,3 \
-#            | tr -d \" \
-#            | xargs curl -Lo ./kind && chmod +x ./kind && mv ./kind /usr/local/bin/
-#          else
-#            echo "KinD is already installed."
-#          fi
-#
-#      - name: Create KinD Cluster
-#        run: |
-#          if kind get clusters | grep -q "${{ env.APP_SERVICE }}-cluster"; then
-#            echo "KinD cluster '${{ env.APP_SERVICE }}-cluster' already exists."
-#          else
-#            echo "Creating KinD cluster '${{ env.APP_SERVICE }}-cluster'..."
-#            kind create cluster --name ${{ env.APP_SERVICE }}-cluster
-#          fi
-#
-#      - name: Set up Kubeconfig for KinD
-#        run: |
-#          mkdir -p $HOME/.kube
-#          echo "Exporting KinD kubeconfig"
-#          kind get kubeconfig --name ${{ env.APP_SERVICE }}-cluster > $HOME/.kube/config
-#          kubectl config use-context kind-${{ env.APP_SERVICE }}-cluster
-#          cat $HOME/.kube/config # Debug: Verify the kubeconfig content
-#
-#      - name: Test Kubernetes Connectivity
-#        run: |
-#          kubectl cluster-info || echo "Kubernetes connectivity test failed"
 
       - name: Deploy to Kubernetes
         if: env.CHANGED_SERVICES == '${{ env.APP_SERVICE }}'
