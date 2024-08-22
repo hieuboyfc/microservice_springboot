@@ -150,7 +150,7 @@ jobs:
 
       - name: Create KinD Cluster
         run: |
-          if kind get clusters | grep -q "api-gateway-cluster"; then
+          if kind get clusters | grep -q "kind-api-gateway-cluster"; then
             echo "KinD cluster '${{ env.APP_SERVICE }}-cluster' already exists."
           else
             echo "Creating KinD cluster '${{ env.APP_SERVICE }}-cluster'..."
@@ -165,19 +165,19 @@ jobs:
           kubectl config use-context kind-${{ env.APP_SERVICE }}-cluster
           cat $HOME/.kube/config # Debug: Verify the kubeconfig content
 
-      - name: Check Kubernetes API Server Connectivity
-        run: |
-          echo "Pinging Kubernetes API Server: ${{ env.KUBE_API_SERVER }}"
-          ping -c 4 ${{ env.KUBE_API_SERVER }} || echo "Ping failed"
+#      - name: Check Kubernetes API Server Connectivity
+#        run: |
+#          echo "Pinging Kubernetes API Server: ${{ env.KUBE_API_SERVER }}"
+#          ping -c 4 ${{ env.KUBE_API_SERVER }} || echo "Ping failed"
 
-      - name: Create Kubeconfig
-        run: |
-          mkdir -p $HOME/.kube
-          echo "${{ env.KUBE_CONFIG }}" > $HOME/.kube/config
-          kubectl config use-context docker-desktop
+#      - name: Create Kubeconfig
+#        run: |
+#          mkdir -p $HOME/.kube
+#          echo "${{ env.KUBE_CONFIG }}" > $HOME/.kube/config
+#          kubectl config use-context docker-desktop
 
-      - name: List Kubernetes nodes
-        run: kubectl get nodes -v=10
+#      - name: List Kubernetes nodes
+#        run: kubectl get nodes -v=10
 
       - name: Test Kubernetes Connectivity
         run: |
