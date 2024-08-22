@@ -1,0 +1,23 @@
+I. Cài Đặt ArgoCD Trong Namespace Hiện Tại ---
+1, Tạo Namespace microservice-springboot (nếu chưa có):
+- CMD: kubectl create namespace microservice-springboot
+
+2, Cài Đặt ArgoCD Trong Namespace microservice_springboot:
+- CMD: kubectl apply -n microservice-springboot -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+3, Expose ArgoCD API Server:
+---> Sử dụng Port Forwarding:
+- CMD: kubectl port-forward svc/argocd-server -n microservice-springboot 8080:443
+
+---> Hoặc Tạo Service Loại LoadBalancer:
+- CMD: kubectl expose service argocd-server --type=LoadBalancer --name=argocd-server -n microservice-springboot
+
+II. Cấu Hình ArgoCD ---
+1, Đăng Nhập ArgoCD:
+---> Lấy mật khẩu admin:
+- CMD: kubectl get secret argocd-initial-admin-secret -n microservice-springboot -o yaml
+
+---> Giải mã base64 mật khẩu: (UzVHZ1J2enpyaGl2V20wUA==)
+- PowerShell: [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String("UzVHZ1J2enpyaGl2V20wUA=="))
+- Linux: echo <base64_encoded_password> | base64 --decode
+---> S5GgRvzzrhivWm0P
