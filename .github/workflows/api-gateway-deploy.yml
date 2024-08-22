@@ -178,6 +178,12 @@ jobs:
           kubectl config use-context kind-${{ env.APP_SERVICE }}-cluster
           cat $HOME/.kube/config # Debug: Verify the kubeconfig content
 
+      - name: Clean Helm configuration
+        run: |
+          echo "Cleaning Helm configuration..."
+          rm -rf ~/.helm
+          mkdir -p ~/.helm/repository
+
       - name: Add Jetstack Cert-Manager repository
         run: |
           helm repo add jetstack https://charts.jetstack.io || echo "Jetstack repo already exists"
