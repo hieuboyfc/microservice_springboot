@@ -27,6 +27,7 @@ env:
   KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
   KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
   ENVIRONMENT: ${{ github.ref == 'refs/heads/prod' && 'prod' || (github.ref == 'refs/heads/qas' && 'qas' || 'dev') }}
+  KUBE_API_SERVER: 'kubernetes.docker.internal'
 
 jobs:
   build:
@@ -132,6 +133,11 @@ jobs:
 
       - name: Print /etc/hosts
         run: cat /etc/hosts
+
+      - name: Check Kubernetes API Server Connectivity
+        run: |
+          echo "Pinging Kubernetes API Server: ${{ env.KUBE_API_SERVER }}"
+          ping -c 4 ${{ env.KUBE_API_SERVER }} || echo "Ping failed"
 
       - name: Create Kubeconfig
         run: |
