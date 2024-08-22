@@ -187,6 +187,7 @@ jobs:
       - name: Add Jetstack Cert-Manager repository
         run: |
           echo "Adding Jetstack repository..."
+          helm init
           helm repo add jetstack https://charts.jetstack.io || echo "Jetstack repo already exists"
           # helm repo update
 
@@ -197,7 +198,7 @@ jobs:
           else
             echo "Installing Cert-Manager"
             helm upgrade --install cert-manager jetstack/cert-manager \
-              --namespace cert-manager --create-namespace \
+              --namespace cert-manager \
               --timeout 10m
               --wait
           fi
@@ -205,6 +206,7 @@ jobs:
       - name: Add Ingress-Nginx repository
         run: |
           echo "Adding Ingress-Nginx repository..."
+          helm init
           helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx || echo "Ingress-Nginx repo already exists"
           # helm repo update
 
@@ -215,7 +217,7 @@ jobs:
           else
             echo "Installing Ingress-Nginx Controller"
             helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx \
-              --namespace ingress-nginx --create-namespace \
+              --namespace ingress-nginx \
               --timeout 10m
               --wait
           fi
