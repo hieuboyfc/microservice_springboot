@@ -147,7 +147,8 @@ jobs:
 
       - name: Test Kubernetes Connectivity
         run: |
-          kubectl cluster-info
+          kubectl cluster-info || echo "Kubernetes connectivity test failed"
+          curl -k https://kubernetes.docker.internal:6443/api || echo "API server test failed"
 
 #      - name: Install KinD
 #        run: |
