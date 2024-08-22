@@ -154,7 +154,7 @@ jobs:
             echo "KinD cluster '${{ env.APP_SERVICE }}-cluster' already exists."
           else
             echo "Creating KinD cluster '${{ env.APP_SERVICE }}-cluster'..."
-            kind create cluster --name ${{ env.APP_SERVICE }}-cluster
+            kind create cluster --name kind-${{ env.APP_SERVICE }}-cluster
           fi
 
       - name: Set up Kubeconfig for KinD
