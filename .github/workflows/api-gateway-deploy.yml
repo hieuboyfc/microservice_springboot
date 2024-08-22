@@ -150,7 +150,10 @@ jobs:
 
       - name: Create KinD Cluster
         run: |
-          if kind get clusters | grep -q "api-gateway-cluster"; then
+          echo "Checking for existing KinD clusters..."
+          kind get clusters || echo "Kind command failed or no clusters found."
+          
+          if kind get clusters | grep -q "${{ env.APP_SERVICE }}-cluster"; then
             echo "KinD cluster '${{ env.APP_SERVICE }}-cluster' already exists."
           else
             echo "Creating KinD cluster '${{ env.APP_SERVICE }}-cluster'..."
