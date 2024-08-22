@@ -155,7 +155,7 @@ jobs:
         run: kubectl version --client
 
       - name: List Kubernetes nodes
-        run: kubectl get nodes
+        run: kubectl get nodes -v=10
 
       - name: Test Kubernetes Connectivity
         run: |
