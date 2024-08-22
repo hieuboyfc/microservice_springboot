@@ -124,6 +124,19 @@ jobs:
       - name: Make executable
         run: chmod +x ${{ env.APP_SERVICE }}
 
+      - name: Determine changed services
+        id: changed-services
+        run: |
+          PREVIOUS_SHA=$(git rev-parse HEAD^ || echo "No previous commit")
+          changes=$(git diff --name-only $PREVIOUS_SHA HEAD || true)
+          echo "Changed files:"
+          echo "$changes"
+          CHANGED_SERVICES=""
+          if echo "$changes" | grep -q '^${{ env.APP_SERVICE }}/'; then
+            CHANGED_SERVICES="${{ env.APP_SERVICE }}"
+          fi
+          echo "CHANGED_SERVICES=$CHANGED_SERVICES" >> $GITHUB_ENV
+
       - name: Debug CHANGED_FILES
         run: |
           echo "Changed services: $CHANGED_SERVICES"
@@ -150,9 +163,6 @@ jobs:
 
       - name: Create KinD Cluster
         run: |
-          echo "Checking for existing KinD clusters..."
-          kind get clusters || echo "Kind command failed or no clusters found."
-          
           if kind get clusters | grep -q "${{ env.APP_SERVICE }}-cluster"; then
             echo "KinD cluster '${{ env.APP_SERVICE }}-cluster' already exists."
           else
