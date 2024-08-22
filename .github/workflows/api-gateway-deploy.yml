@@ -116,13 +116,13 @@ jobs:
       - name: Set up Helm
         uses: azure/setup-helm@v1
         with:
-          version: '3.12.1'
+          version: 'latest'
 
       - name: Change directory to ${{ env.APP_SERVICE }}
-        run: cd ${{ env.APP_SERVICE }} || exit 1 # Ensure directory exists
+        run: cd ${{ env.APP_SERVICE }}/k8s || exit 1 # Ensure directory exists
 
       - name: Make executable
-        run: chmod +x ${{ env.APP_SERVICE }}
+        run: chmod +x ${{ env.APP_SERVICE }}/k8s
 
       - name: Determine changed services
         id: changed-services
@@ -188,7 +188,7 @@ jobs:
         run: |
           echo "Adding Jetstack repository..."
           helm repo add jetstack https://charts.jetstack.io || echo "Jetstack repo already exists"
-          helm repo update
+          # helm repo update
 
       - name: Install Jetstack Cert-Manager
         run: |
@@ -206,7 +206,7 @@ jobs:
         run: |
           echo "Adding Ingress-Nginx repository..."
           helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx || echo "Ingress-Nginx repo already exists"
-          helm repo update
+          # helm repo update
 
       - name: Install Ingress-Nginx Controller
         run: |
