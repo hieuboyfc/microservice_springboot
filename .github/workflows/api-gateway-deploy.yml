@@ -147,7 +147,7 @@ jobs:
 
       - name: Test Kubernetes Connectivity
         run: |
-          kubectl cluster-info || echo "Kubernetes connectivity test failed"
+          kubectl cluster-info
 
 #      - name: Install KinD
 #        run: |
