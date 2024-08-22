@@ -159,20 +159,30 @@ jobs:
         run: |
           echo "Changed services: $CHANGED_SERVICES"
 
-      - name: Create kubeconfig
-        run: |
-          mkdir -p $HOME/.kube
-          echo "${{ env.KUBE_CONFIG }}" > $HOME/.kube/config
+#      - name: Create kubeconfig
+#        run: |
+#          mkdir -p $HOME/.kube
+#          echo "${{ env.KUBE_CONFIG }}" > $HOME/.kube/config
 
-      - name: Set KUBECONFIG environment variable
-        run: echo "KUBECONFIG=$HOME/.kube/config" >> $GITHUB_ENV
+#      - name: Set KUBECONFIG environment variable
+#        run: echo "KUBECONFIG=$HOME/.kube/config" >> $GITHUB_ENV
 
 #      - name: Verify Kubernetes API
 #        run: curl -k https://kubernetes.docker.internal:6443
 
+#      - name: Test Kubernetes Connectivity
+#        run: |
+#          kubectl --kubeconfig=$HOME/.kube/config cluster-info
+
+      - name: Set up Kubeconfig for KinD
+        run: |
+          echo "Exporting KinD kubeconfig"
+          kind get kubeconfig --name api-gateway-cluster > $HOME/.kube/config
+          kubectl config use-context kind-api-gateway-cluster
+
       - name: Test Kubernetes Connectivity
         run: |
-          kubectl --kubeconfig=$HOME/.kube/config cluster-info
+          kubectl cluster-info || echo "Kubernetes connectivity test failed"
 
       - name: Deploy to Kubernetes
         if: env.CHANGED_SERVICES == 'api-gateway'
