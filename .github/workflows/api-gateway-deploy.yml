@@ -27,7 +27,7 @@ env:
   KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
   KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
   ENVIRONMENT: ${{ github.ref == 'refs/heads/prod' && 'prod' || (github.ref == 'refs/heads/qas' && 'qas' || 'dev') }}
-  KUBE_API_SERVER: 'kubernetes.docker.internal'
+  KUBE_API_SERVER: 'ed60-117-1-84-148.ngrok-free.app'
 
 jobs:
   build:
@@ -148,7 +148,7 @@ jobs:
       - name: Test Kubernetes Connectivity
         run: |
           kubectl cluster-info || echo "Kubernetes connectivity test failed"
-          curl -k https://kubernetes.docker.internal:6443/api || echo "API server test failed"
+          curl -k https://${{ KUBE_API_SERVER }}/api || echo "API server test failed"
 
 #      - name: Install KinD
 #        run: |
