@@ -128,12 +128,12 @@ jobs:
         run: |
           echo "Changed services: $CHANGED_SERVICES"
 
-      - name: Update /etc/hosts
-        run: |
-          echo "127.0.0.1    kubernetes.docker.internal" | sudo tee -a /etc/hosts
+#      - name: Update /etc/hosts
+#        run: |
+#          echo "127.0.0.1    kubernetes.docker.internal" | sudo tee -a /etc/hosts
 
-      - name: Print /etc/hosts
-        run: cat /etc/hosts
+#      - name: Print /etc/hosts
+#        run: cat /etc/hosts
 
       - name: Install KinD
         run: |
@@ -150,7 +150,7 @@ jobs:
 
       - name: Create KinD Cluster
         run: |
-          if kind get clusters | grep -q "kind-api-gateway-cluster"; then
+          if kind get clusters | grep -q "api-gateway-cluster"; then
             echo "KinD cluster '${{ env.APP_SERVICE }}-cluster' already exists."
           else
             echo "Creating KinD cluster '${{ env.APP_SERVICE }}-cluster'..."
