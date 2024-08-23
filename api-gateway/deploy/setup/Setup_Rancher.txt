@@ -8,10 +8,13 @@
 
 3, Cài đặt Rancher:
 ---> Cài đặt Rancher sử dụng Helm với LoadBalancer (cho các môi trường công cộng):
-- CMD: helm upgrade --install rancher rancher-stable/rancher --namespace cattle-system --set hostname=127.0.0.1 --set replicas=1
+- CMD: helm upgrade --install rancher rancher-stable/rancher --namespace cattle-system --set hostname=rancher.zimji.com --set replicas=1
 
 ---> Cài đặt Rancher sử dụng Helm với NodePort (cho các môi trường cục bộ):
-- CMD: helm upgrade --install rancher rancher-stable/rancher --namespace cattle-system --set hostname=127.0.0.1 --set replicas=1 --set service.type=NodePort
+- CMD: helm upgrade --install rancher rancher-stable/rancher --namespace cattle-system --set hostname=rancher.zimji.com --set replicas=1 --set service.type=NodePort
+
+---> Xóa cài đặt
+- CMD: helm delete rancher --namespace cattle-system
 
 4, Kiểm Tra Trạng Thái của Rancher:
 - CMD: kubectl -n cattle-system get pods
