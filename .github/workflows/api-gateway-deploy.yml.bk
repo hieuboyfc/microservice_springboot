@@ -119,10 +119,10 @@ jobs:
           version: 'latest'
 
       - name: Change directory to ${{ env.APP_SERVICE }}
-        run: cd ${{ env.APP_SERVICE }}/k8s || exit 1 # Ensure directory exists
+        run: cd ${{ env.APP_SERVICE }}/deploy || exit 1 # Ensure directory exists
 
       - name: Make executable
-        run: chmod +x ${{ env.APP_SERVICE }}/k8s
+        run: chmod +x ${{ env.APP_SERVICE }}/deploy
 
       - name: Determine changed services
         id: changed-services
@@ -243,7 +243,7 @@ jobs:
         run: |
           echo "Deploying ${{ env.APP_SERVICE }} to environment: ${{ env.ENVIRONMENT }}, namespace: ${{ env.KUBE_NAMESPACE }}"
           
-          cd ${{ env.APP_SERVICE }}/k8s || exit 1 # Ensure directory exists        
+          cd ${{ env.APP_SERVICE }}/deploy || exit 1 # Ensure directory exists
           
           # Verify if the values file exists
           VALUES_FILE="./values-${{ env.ENVIRONMENT }}.yaml"
