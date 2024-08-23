@@ -18,6 +18,7 @@
 - CMD: helm lint | helm lint api-gateway
 - CMD: helm list --all-namespaces
 - CMD: helm list --namespace microservice-springboot
+- CMD: helm upgrade --install api-gateway ./ --values ./values-dev.yaml --namespace microservice-springboot
 - CMD: helm install api-gateway ./ --namespace microservice-springboot --debug
 - CMD: helm upgrade api-gateway ./ --namespace microservice-springboot --debug
 - CMD: helm uninstall api-gateway --namespace microservice-springboot
