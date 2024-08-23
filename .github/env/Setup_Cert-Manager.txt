@@ -8,7 +8,7 @@
 - CMD: helm search repo jetstack/cert-manager --versions
 
 3, Cài đặt Cert-Manager:
-- CMD: helm upgrade --install cert-manager jetstack/cert-manager --namespace cert-manager --set crds.enabled=true
+- CMD: helm upgrade --install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace --set crds.enabled=true
 - CMD: helm uninstall cert-manager jetstack/cert-manager --namespace cert-manager
 - CMD: helm delete cert-manager --namespace cert-manager
 
