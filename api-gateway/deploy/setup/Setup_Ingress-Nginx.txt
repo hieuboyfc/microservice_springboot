@@ -11,6 +11,7 @@
 - CMD: helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx --namespace ingress-nginx --create-namespace
 - CMD: helm uninstall ingress-nginx ingress-nginx/ingress-nginx --namespace ingress-nginx
 - CMD: helm delete ingress-nginx --namespace ingress-nginx
+- CMD: kubectl delete namespace ingress-nginx
 
 4, Kiểm Tra Trạng Thái của Rancher:
 - CMD: kubectl -n ingress-nginx get pods

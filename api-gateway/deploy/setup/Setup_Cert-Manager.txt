@@ -11,6 +11,7 @@
 - CMD: helm upgrade --install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace --set crds.enabled=true
 - CMD: helm uninstall cert-manager jetstack/cert-manager --namespace cert-manager
 - CMD: helm delete cert-manager --namespace cert-manager
+- CMD: kubectl delete namespace cert-manager
 
 4, Kiểm Tra Trạng Thái của Rancher:
 - CMD: kubectl -n cert-manager get pods

@@ -18,6 +18,7 @@
 
 ---> Xóa cài đặt:
 - CMD: helm delete rancher --namespace cattle-system
+- CMD: kubectl delete namespace cattle-system
 
 4, Kiểm Tra Trạng Thái của Rancher:
 - CMD: kubectl -n cattle-system get pods
