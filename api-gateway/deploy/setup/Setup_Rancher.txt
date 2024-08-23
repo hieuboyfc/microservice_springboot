@@ -28,3 +28,10 @@
 
 6, Xem Logs và Tình Trạng:
 - CMD: helm status rancher --namespace cattle-system
+
+7, Áp dụng các tệp YAML:
+- CMD: kubectl apply -f rancher-role.yaml
+- CMD: kubectl apply -f rancher-role-binding.yaml
+
+8, Kiểm Tra và Cập Nhật ServiceAccount:
+- CMD: kubectl get serviceaccounts -n cattle-system
