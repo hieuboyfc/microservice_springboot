@@ -1,0 +1,19 @@
+1, Tạo Namespace ingress-nginx (nếu chưa có):
+- CMD: kubectl create namespace ingress-nginx
+
+2, Tải Ingress-Nginx về:
+- CMD: helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx --force-update
+- CMD: helm repo update
+- CMD: helm search repo ingress-nginx
+- CMD: helm search repo ingress-nginx --versions
+
+3, Cài đặt Ingress-Nginx:
+- CMD: helm upgrade --install nginx-ingress ingress-nginx/ingress-nginx --namespace nginx-ingress --create-namespace
+- CMD: helm uninstall nginx-ingress ingress-nginx/ingress-nginx --namespace nginx-ingress
+- CMD: helm delete nginx-ingress --namespace nginx-ingress
+
+4, Kiểm Tra Trạng Thái của Rancher:
+- CMD: kubectl -n ingress-nginx get pods
+
+5, Kiểm Tra Dịch Vụ Rancher:
+- CMD: kubectl -n ingress-nginx get svc

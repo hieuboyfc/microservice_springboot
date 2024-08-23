@@ -1,0 +1,19 @@
+1, Tạo Namespace cert-manager (nếu chưa có):
+- CMD: kubectl create namespace cert-manager
+
+2, Tải Cert-Manager về:
+- CMD: helm repo add jetstack https://charts.jetstack.io --force-update
+- CMD: helm repo update
+- CMD: helm search repo jetstack/cert-manager
+- CMD: helm search repo jetstack/cert-manager --versions
+
+3, Cài đặt Cert-Manager:
+- CMD: helm upgrade --install cert-manager jetstack/cert-manager --namespace cert-manager --set crds.enabled=true
+- CMD: helm uninstall cert-manager jetstack/cert-manager --namespace cert-manager
+- CMD: helm delete cert-manager --namespace cert-manager
+
+4, Kiểm Tra Trạng Thái của Rancher:
+- CMD: kubectl -n cert-manager get pods
+
+5, Kiểm Tra Dịch Vụ Rancher:
+- CMD: kubectl -n cert-manager get svc

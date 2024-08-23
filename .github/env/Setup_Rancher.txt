@@ -1,0 +1,20 @@
+1, Tạo Namespace cattle-system (nếu chưa có):
+- CMD: kubectl create namespace cattle-system
+
+2, Tải Rancher về:
+- CMD: helm repo add rancher-latest https://releases.rancher.com/server-charts/latest --force-update
+- CMD: helm repo update
+- CMD: helm search repo rancher-stable/rancher --versions
+
+3, Cài đặt Rancher:
+---> Cài đặt Rancher sử dụng Helm với LoadBalancer (cho các môi trường công cộng):
+- CMD: helm upgrade --install rancher rancher-stable/rancher --namespace cattle-system --set hostname=127.0.0.1 --set replicas=1
+
+---> Cài đặt Rancher sử dụng Helm với NodePort (cho các môi trường cục bộ):
+- CMD: helm upgrade --install rancher rancher-stable/rancher --namespace cattle-system --set hostname=127.0.0.1 --set replicas=1 --set service.type=NodePort
+
+4, Kiểm Tra Trạng Thái của Rancher:
+- CMD: kubectl -n cattle-system get pods
+
+5, Kiểm Tra Dịch Vụ Rancher:
+- CMD: kubectl -n cattle-system get svc
