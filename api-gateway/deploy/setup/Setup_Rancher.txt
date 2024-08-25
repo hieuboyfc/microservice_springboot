@@ -31,14 +31,11 @@
 
 7, Áp dụng các tệp YAML:
 
-8, Kiểm Tra và Cập Nhật ServiceAccount:
-- CMD: kubectl get serviceaccounts -n cattle-system
-
 8, Kiểm Tra và Sửa Lỗi Trong Cấu Hình
 - CMD: kubectl describe ingress rancher -n cattle-system
 
-10, Kiểm Tra Logs
+9, Kiểm Tra Logs
 - CMD: kubectl logs -l app=rancher -n cattle-system
 
-11, Khởi Động Lại Các Thành Phần:
+10, Khởi Động Lại Các Thành Phần:
 - CMD: kubectl rollout restart deployment rancher -n cattle-system
