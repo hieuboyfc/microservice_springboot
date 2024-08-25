@@ -17,8 +17,8 @@
 - CMD: kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.0/cert-manager.crds.yaml
 
 5, Áp dụng tệp YAML:
-- CMD: kubectl apply -f cluster-issuer.yaml
-- CMD: kubectl apply -f certificate.yaml
+- CMD: kubectl apply -f cluster-issuer-rancher.yaml
+- CMD: kubectl apply -f certificate-rancher.yaml
 
 6, Kiểm Tra Trạng Thái của Rancher:
 - CMD: kubectl get pods -n cert-manager
