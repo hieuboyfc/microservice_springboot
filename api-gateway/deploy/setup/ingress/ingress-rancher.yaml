@@ -5,11 +5,9 @@ metadata:
   namespace: cattle-system
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
-  tls:
-    - hosts:
-        - rancher.zimji.com
-      secretName: rancher-tls-secret
+  ingressClassName: nginx
   rules:
     - host: rancher.zimji.com
       http:
@@ -21,3 +19,7 @@ spec:
                 name: rancher
                 port:
                   number: 80
+  tls:
+    - hosts:
+        - rancher.zimji.com
+      secretName: rancher-tls-secret
