@@ -13,8 +13,18 @@
 - CMD: helm delete ingress-nginx --namespace ingress-nginx
 - CMD: kubectl delete namespace ingress-nginx
 
-4, Kiểm Tra Trạng Thái của Rancher:
-- CMD: kubectl -n ingress-nginx get pods
+4, Áp dụng tệp YAML:
+- CMD: kubectl apply -f ingress-rancher.yaml
+- CMD: kubectl apply -f ingress-nginx-controller.yaml
 
-5, Kiểm Tra Dịch Vụ Rancher:
-- CMD: kubectl -n ingress-nginx get svc
+5, Kiểm Tra Trạng Thái của Rancher:
+- CMD: kubectl get pods -n ingress-nginx
+
+6, Kiểm Tra Dịch Vụ Rancher:
+- CMD: kubectl get svc -n ingress-nginx
+
+7, Kiểm Tra Logs
+- CMD: kubectl logs -l app.kubernetes.io/name=ingress-nginx -n ingress-nginx
+
+8, Khởi Động Lại Các Thành Phần:
+- CMD: kubectl rollout restart deployment ingress-nginx -n ingress-nginx

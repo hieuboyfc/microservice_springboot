@@ -13,8 +13,26 @@
 - CMD: helm delete cert-manager --namespace cert-manager
 - CMD: kubectl delete namespace cert-manager
 
-4, Kiểm Tra Trạng Thái của Rancher:
-- CMD: kubectl -n cert-manager get pods
+4, Tạo CRDs (Custom Resource Definitions)
+- CMD: kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.0/cert-manager.crds.yaml
 
-5, Kiểm Tra Dịch Vụ Rancher:
-- CMD: kubectl -n cert-manager get svc
+5, Áp dụng tệp YAML:
+- CMD: kubectl apply -f cluster-issuer.yaml
+- CMD: kubectl apply -f certificate.yaml
+
+6, Kiểm Tra Trạng Thái của Rancher:
+- CMD: kubectl get pods -n cert-manager
+
+7, Kiểm Tra Dịch Vụ Rancher:
+- CMD: kubectl get svc -n cert-manager
+- CMD: kubectl get crds
+
+8, Kiểm Tra và Sửa Lỗi Trong Cấu Hình
+- CMD: kubectl get certificates -n default
+- CMD: kubectl get clusterissuers
+
+9, Kiểm Tra Logs
+- CMD: kubectl logs -l app=cert-manager -n cert-manager
+
+10, Khởi Động Lại Các Thành Phần:
+- CMD: kubectl rollout restart deployment cert-manager -n cert-manager

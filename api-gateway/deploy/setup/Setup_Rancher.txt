@@ -21,10 +21,10 @@
 - CMD: kubectl delete namespace cattle-system
 
 4, Kiểm Tra Trạng Thái của Rancher:
-- CMD: kubectl -n cattle-system get pods
+- CMD: kubectl get pods -n cattle-system
 
 5, Kiểm Tra Dịch Vụ Rancher:
-- CMD: kubectl -n cattle-system get svc
+- CMD: kubectl get svc -n cattle-system
 
 6, Xem Logs và Tình Trạng:
 - CMD: helm status rancher --namespace cattle-system
@@ -35,3 +35,12 @@
 
 8, Kiểm Tra và Cập Nhật ServiceAccount:
 - CMD: kubectl get serviceaccounts -n cattle-system
+
+8, Kiểm Tra và Sửa Lỗi Trong Cấu Hình
+- CMD: kubectl describe ingress rancher -n cattle-system
+
+10, Kiểm Tra Logs
+- CMD: kubectl logs -l app=rancher -n cattle-system
+
+11, Khởi Động Lại Các Thành Phần:
+- CMD: kubectl rollout restart deployment rancher -n cattle-system
