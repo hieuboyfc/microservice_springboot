@@ -7,6 +7,7 @@ metadata:
     {{- include "labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
+  publishNotReadyAddresses: true
   ports:
     - port: {{ .Values.service.port }} # Cổng dịch vụ nội bộ
       targetPort: {{ .Values.service.port }} # Cổng của container
