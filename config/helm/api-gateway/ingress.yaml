@@ -1,11 +1,13 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: api-gateway
+  name: api-gateway-ingress
   namespace: microservice-springboot
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
     nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
 spec:
   ingressClassName: nginx
   rules:
@@ -23,4 +25,4 @@ spec:
   tls:
     - hosts:
         - hieuboy-zimji.com
-      secretName: api-gateway-tls-secret
+      # secretName: api-gateway-tls-secret

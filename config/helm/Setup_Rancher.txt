@@ -8,7 +8,7 @@
 
 3, Cài đặt Rancher:
 ---> Cài đặt Rancher sử dụng Helm với LoadBalancer (cho các môi trường công cộng):
-- CMD: helm upgrade --install rancher rancher-latest/rancher --namespace cattle-system --set hostname=rancher.zimji.com --set replicas=1
+- CMD: helm upgrade --install rancher rancher-latest/rancher --namespace cattle-system --set hostname=rancher.zimji.com --set replicas=1 --set ingress.tls.source=letsEncrypt --set letsEncrypt.email=hieuboyfc@gmail.com
 
 ---> Cài đặt Rancher sử dụng Helm với NodePort (cho các môi trường cục bộ):
 - CMD: helm upgrade --install rancher rancher-latest/rancher --namespace cattle-system --set hostname=rancher.zimji.com --set replicas=1 --set service.type=NodePort
@@ -30,6 +30,12 @@
 - CMD: helm status rancher --namespace cattle-system
 
 7, Áp dụng các tệp YAML:
+- CMD: kubectl apply -f rancher-service.yaml
+- CMD: kubectl apply -f rancher-ingress.yaml
+
+- CMD: kubectl describe ingress rancher-ingress -n cattle-system
+
+- CMD: kubectl get svc rancher -n cattle-system -o yaml > rancher-service-output.yaml
 
 8, Kiểm Tra và Sửa Lỗi Trong Cấu Hình
 - CMD: kubectl describe ingress rancher -n cattle-system
@@ -39,3 +45,12 @@
 
 10, Khởi Động Lại Các Thành Phần:
 - CMD: kubectl rollout restart deployment rancher -n cattle-system
+
+11, Lấy thông tin Mật khẩu Rancher:
+---> Lấy mật khẩu mặc định:
+- PowerShell: kubectl get secret bootstrap-secret --namespace cattle-system -o jsonpath='{.data.bootstrapPassword}' | % { [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($_)) }
+===> Mật khẩu: 8fp8kkkhfph959dqvv2f6tn9tdf24p9qqg5t9kzsb8fg6x4dst4vvr
+
+---> Tạo mật khẩu mới:
+- CMD: kubectl delete secret bootstrap-secret --namespace cattle-system
+- CMD: kubectl create secret generic bootstrap-secret --namespace cattle-system --from-literal=bootstrapPassword=HieuBoy@1997
