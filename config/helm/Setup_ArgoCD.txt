@@ -5,16 +5,24 @@ I. Cài Đặt ArgoCD Trong Namespace Hiện Tại ---
 2, Cài Đặt ArgoCD Trong Namespace microservice_springboot:
 - CMD: kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
-3, Kiểm Tra Trạng Thái của ArgoCD:
+3, Áp dụng tệp YAML:
+- CMD: kubectl apply -f argocd-service.yaml
+- CMD: kubectl apply -f argocd-ingress.yaml
+
+- CMD: kubectl describe ingress argocd-ingress -n argocd
+
+- CMD: kubectl get svc argocd-server -n argocd -o yaml > argocd-service-output.yaml
+
+4, Kiểm Tra Trạng Thái của ArgoCD:
 - CMD: kubectl get pods -n argocd
 
-4, Kiểm Tra Dịch Vụ ArgoCD:
+5, Kiểm Tra Dịch Vụ ArgoCD:
 - CMD: kubectl get svc -n argocd
 
-5, Expose ArgoCD API Server:
+6, Expose ArgoCD API Server:
 ---> Sử dụng Port Forwarding:
-- CMD: kubectl port-forward svc/argocd-server -n argocd 8880:443
-- CMD: kubectl port-forward pod/argocd-server-65965c75-vhc6r -n microservice-springboot 4001:8080
+- CMD: kubectl port-forward svc/argocd-server -n argocd 8881:443
+- CMD: kubectl port-forward pod/argocd-server-65965c75-vhc6r -n microservice-springboot 8880:8080
 
 ---> Hoặc Tạo Service Loại LoadBalancer:
 - CMD: kubectl expose service argocd-server --type=LoadBalancer --name=argocd-server -n argocd

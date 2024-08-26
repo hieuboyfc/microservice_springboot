@@ -30,6 +30,12 @@
 - CMD: helm status rancher --namespace cattle-system
 
 7, Áp dụng các tệp YAML:
+- CMD: kubectl apply -f rancher-service.yaml
+- CMD: kubectl apply -f rancher-ingress.yaml
+
+- CMD: kubectl describe ingress rancher-ingress -n cattle-system
+
+- CMD: kubectl get svc rancher -n cattle-system -o yaml > rancher-service-output.yaml
 
 8, Kiểm Tra và Sửa Lỗi Trong Cấu Hình
 - CMD: kubectl describe ingress rancher -n cattle-system
