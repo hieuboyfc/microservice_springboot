@@ -1,19 +1,6 @@
 ===> CMD: C:\Users\ZimJi\Desktop\microservice_springboot\api-gateway\deploy>
 
 ===> Helm
-- CMD: helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx --force-update
-- CMD: helm repo update
-- CMD: helm search repo ingress-nginx
-- CMD: helm install nginx-ingress ingress-nginx/ingress-nginx --namespace microservice-springboot --create-namespace
-- CMD: helm uninstall nginx-ingress ingress-nginx/ingress-nginx --namespace microservice-springboot
-- CMD: helm search repo ingress-nginx --versions
-
-- CMD: helm repo add jetstack https://charts.jetstack.io --force-update
-- CMD: helm repo update
-- CMD: helm install cert-manager jetstack/cert-manager --namespace microservice-springboot --set installCRDs=true
-- CMD: helm uninstall cert-manager jetstack/cert-manager --namespace microservice-springboot
-- CMD: helm delete cert-manager --namespace microservice-springboot
-
 - CMD: helm create api-gateway
 - CMD: helm lint | helm lint api-gateway
 - CMD: helm list --all-namespaces
