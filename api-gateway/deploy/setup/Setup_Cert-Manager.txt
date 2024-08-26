@@ -20,6 +20,9 @@
 - CMD: kubectl apply -f cluster-issuer-rancher.yaml
 - CMD: kubectl apply -f certificate-rancher.yaml
 
+- CMD: kubectl apply -f cluster-issuer.yaml
+- CMD: kubectl apply -f certificate.yaml
+
 6, Kiểm Tra Trạng Thái của Rancher:
 - CMD: kubectl get pods -n cert-manager
 
