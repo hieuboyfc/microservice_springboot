@@ -16,6 +16,8 @@
 4, Áp dụng tệp YAML:
 - CMD: kubectl apply -f ingress-rancher.yaml
 
+- CMD: kubectl apply -f ingress.yaml
+
 5, Kiểm Tra Trạng Thái của Rancher:
 - CMD: kubectl get pods -n ingress-nginx
 
