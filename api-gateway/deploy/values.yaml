@@ -80,7 +80,7 @@ ingress:
   nginx:
     image: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:latest
     rewriteTarget: /
-  tls: true
+  tls: false
 
 imagePullSecrets: []
 nameOverride: ""
