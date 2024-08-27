@@ -12,5 +12,12 @@ spec:
   dnsNames:
     - rancher.zimji.com
 
+# kubectl get certificate -A
+# kubectl get certificate rancher-cert -n cattle-system
 # kubectl describe certificate rancher-cert -n cattle-system
+# kubectl delete certificate rancher-cert -n cattle-system
+
+# kubectl get secret -A
 # kubectl get secret rancher-tls -n cattle-system
+# kubectl describe secret rancher-tls -n cattle-system
+# kubectl delete secret rancher-tls -n cattle-system

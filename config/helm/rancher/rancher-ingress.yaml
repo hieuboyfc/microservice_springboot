@@ -20,9 +20,14 @@ spec:
               service:
                 name: rancher
                 port:
-                  number: 8882
+                  number: 80 # 8882
 
   tls:
     - hosts:
         - rancher.zimji.com
-      secretName: rancher-tls  # Tên Secret chứa chứng chỉ
+      secretName: tls-rancher-ingress  # Tên Secret chứa chứng chỉ
+
+# kubectl get ingress -A
+# kubectl get ingress rancher-ingress -n cattle-system
+# kubectl describe ingress rancher-ingress -n cattle-system
+# kubectl delete ingress rancher-ingress -n cattle-system

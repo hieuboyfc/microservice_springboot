@@ -9,13 +9,13 @@
 
 3, Cài đặt Rancher:
 ---> Cài đặt Rancher sử dụng Helm với LoadBalancer (cho các môi trường công cộng):
-- CMD: helm upgrade --install rancher rancher-latest/rancher --namespace cattle-system --set hostname=rancher.zimji.com --set replicas=1 --set ingress.tls.source=letsEncrypt --set letsEncrypt.email=hieuboyfc@gmail.com
+- CMD: helm upgrade --install rancher rancher-latest/rancher --namespace cattle-system --set hostname=rancher.zimji.com --set replicas=1 --set ingress.tls.source=letsEncrypt --set letsEncrypt.email=hieuboyfc@gmail.com --version v2.9.1
 
 ---> Cài đặt Rancher sử dụng Helm với NodePort (cho các môi trường cục bộ):
-- CMD: helm upgrade --install rancher rancher-latest/rancher --namespace cattle-system --set hostname=rancher.zimji.com --set replicas=1 --set service.type=NodePort
+- CMD: helm upgrade --install rancher rancher-latest/rancher --namespace cattle-system --set hostname=rancher.zimji.com --set replicas=1 --set service.type=NodePort --version v2.9.1
 
 ---> Gỡ cài đặt:
-- CMD: helm uninstall rancher rancher-latest/rancher --namespace cattle-system
+- CMD: helm uninstall rancher rancher-latest/rancher --namespace cattle-system --version v2.9.1
 
 ---> Xóa cài đặt:
 - CMD: helm delete rancher --namespace cattle-system

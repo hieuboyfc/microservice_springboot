@@ -13,5 +13,7 @@ spec:
           ingress:
             class: nginx # Tên lớp ingress mà cert-manager sẽ sử dụng
 
+# kubectl get clusterissuer -A
 # kubectl get clusterissuer letsencrypt-prod
 # kubectl describe clusterissuer letsencrypt-prod
+# kubectl delete clusterissuer letsencrypt-prod
