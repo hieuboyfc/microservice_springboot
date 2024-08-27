@@ -4,10 +4,13 @@ metadata:
   name: rancher-cert
   namespace: cattle-system
 spec:
-  secretName: rancher-tls
+  secretName: rancher-tls  # Tên Secret nơi chứng chỉ sẽ được lưu trữ
   issuerRef:
     name: letsencrypt-prod
     kind: ClusterIssuer
   commonName: rancher.zimji.com
   dnsNames:
     - rancher.zimji.com
+
+# kubectl describe certificate rancher-cert -n cattle-system
+# kubectl get secret rancher-tls -n cattle-system

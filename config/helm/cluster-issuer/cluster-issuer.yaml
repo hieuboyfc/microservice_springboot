@@ -12,3 +12,6 @@ spec:
       - http01:
           ingress:
             class: nginx # Tên lớp ingress mà cert-manager sẽ sử dụng
+
+# kubectl get clusterissuer letsencrypt-prod
+# kubectl describe clusterissuer letsencrypt-prod

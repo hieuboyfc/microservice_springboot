@@ -25,4 +25,4 @@ spec:
   tls:
     - hosts:
         - rancher.zimji.com
-      secretName: tls-rancher-ingress
+      secretName: rancher-tls  # Tên Secret chứa chứng chỉ
