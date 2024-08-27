@@ -8,13 +8,14 @@
 - CMD: helm search repo jetstack/cert-manager --versions
 
 3, Cài đặt Cert-Manager:
-- CMD: helm upgrade --install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace --set crds.enabled=true
+- CMD: helm upgrade --install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace --version v1.13.0 --set crds.enabled=true
 - CMD: helm uninstall cert-manager jetstack/cert-manager --namespace cert-manager
 - CMD: helm delete cert-manager --namespace cert-manager
 - CMD: kubectl delete namespace cert-manager
 
 4, Tạo CRDs (Custom Resource Definitions)
 - CMD: kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.0/cert-manager.crds.yaml
+- CMD: kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.0/cert-manager.yaml
 
 5, Áp dụng tệp YAML:
 - CMD: kubectl apply -f cluster-issuer-rancher.yaml
@@ -29,6 +30,9 @@
 7, Kiểm Tra Dịch Vụ Rancher:
 - CMD: kubectl get svc -n cert-manager
 - CMD: kubectl get crds
+
+- CMD: kubectl get clusterissuer letsencrypt-prod -o yaml
+- CMD: kubectl describe clusterissuer letsencrypt-prod
 
 8, Kiểm Tra và Sửa Lỗi Trong Cấu Hình
 - CMD: kubectl get certificates -n default
