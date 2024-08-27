@@ -30,9 +30,12 @@
 - CMD: kubectl get crds
 - CMD: kubectl get all -n cert-manager
 
-5, Kiểm Tra Logs
+5, Kiểm Tra Logs:
 - CMD: kubectl logs -l app=cert-manager -n cert-manager
 - CMD: kubectl logs cert-manager-d894bbbd4-kq6ld -n cert-manager
 
 6, Khởi Động Lại Các Thành Phần:
 - CMD: kubectl rollout restart deployment cert-manager -n cert-manager
+
+7, Lấy thông tin Values để chỉnh sửa (Nếu cần):
+- CMD: helm show values jetstack/cert-manager --version v1.15.3 > custom-values.yaml

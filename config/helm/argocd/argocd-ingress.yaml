@@ -4,7 +4,6 @@ metadata:
   name: argocd-ingress
   namespace: argocd
   annotations:
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   ingressClassName: nginx
@@ -18,4 +17,9 @@ spec:
               service:
                 name: argocd-server
                 port:
-                  number: 80
+                  number: 443
+
+# kubectl get ingress -A
+# kubectl get ingress argocd-ingress -n argocd
+# kubectl describe ingress argocd-ingress -n argocd
+# kubectl delete ingress argocd-ingress -n argocd
