@@ -9,11 +9,11 @@ spec:
   type: ClusterIP
   publishNotReadyAddresses: true
   ports:
-    - name: http
+    - name: rancher-http
       port: 8882
       protocol: TCP
       targetPort: 80
-    - name: https-internal
+    - name: rancher-https-internal
       port: 443
       protocol: TCP
       targetPort: 444

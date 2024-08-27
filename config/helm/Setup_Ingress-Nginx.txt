@@ -8,21 +8,21 @@
 - CMD: helm search repo ingress-nginx --versions
 
 3, Cài đặt Ingress-Nginx:
-- CMD: helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx --namespace ingress-nginx --create-namespace
-- CMD: helm uninstall ingress-nginx ingress-nginx/ingress-nginx --namespace ingress-nginx
+- CMD: helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx --namespace ingress-nginx --create-namespace --version 4.11.2
+- CMD: helm uninstall ingress-nginx ingress-nginx/ingress-nginx --namespace ingress-nginx --version 4.11.2
 - CMD: helm delete ingress-nginx --namespace ingress-nginx
 - CMD: kubectl delete namespace ingress-nginx
 
 4, Áp dụng tệp YAML:
-- CMD: kubectl apply -f ingress.yaml
 
 5, Kiểm tra Trạng thái của Ingress-Nginx:
 - CMD: kubectl get pods -n ingress-nginx
 - CMD: kubectl get svc -n ingress-nginx
 - CMD: kubectl get deployments -n ingress-nginx
+- CMD: kubectl get all -n ingress-nginx
 
 6, Kiểm Tra Logs
 - CMD: kubectl logs -l app.kubernetes.io/name=ingress-nginx -n ingress-nginx
 
 7, Khởi Động Lại Các Thành Phần:
-- CMD: kubectl rollout restart deployment ingress-nginx -n ingress-nginx
+- CMD: kubectl rollout restart deployment ingress-nginx-controller -n ingress-nginx
