@@ -4,9 +4,9 @@ I. Cài Đặt ArgoCD Trong Namespace Hiện Tại ---
 
 2, Cài Đặt ArgoCD Trong Namespace microservice_springboot:
 - CMD: kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+- CMD: kubectl delete -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
 3, Áp dụng tệp YAML:
-- CMD: kubectl apply -f argocd-service.yaml
 - CMD: kubectl apply -f argocd-ingress.yaml
 
 - CMD: kubectl describe ingress argocd-ingress -n argocd
