@@ -7,6 +7,7 @@ I. Cài Đặt ArgoCD Trong Namespace Hiện Tại ---
 - CMD: kubectl delete -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
 3, Áp dụng tệp YAML:
+- CMD: kubectl apply -f argocd-service.yaml
 - CMD: kubectl apply -f argocd-ingress.yaml
 
 4, Kiểm tra Trạng thái của ArgoCD:

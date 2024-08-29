@@ -15,7 +15,7 @@
 - CMD: helm upgrade --install rancher rancher-latest/rancher --namespace cattle-system --set hostname=rancher.zimji.com --set replicas=1 --set service.type=NodePort --version v2.9.1
 
 ---> Gỡ cài đặt:
-- CMD: helm uninstall rancher rancher-latest/rancher --namespace cattle-system --version v2.9.1
+- CMD: helm uninstall rancher rancher-latest/rancher --namespace cattle-system
 
 ---> Xóa cài đặt:
 - CMD: helm delete rancher --namespace cattle-system
@@ -23,7 +23,7 @@
 
 4, Áp dụng các tệp YAML:
 - CMD: kubectl apply -f rancher-certificate.yaml
-- CMD: kubectl apply -f rancher-service.yaml
+- CMD: kubectl apply -f rancher-service.yaml --save-config
 - CMD: kubectl apply -f rancher-ingress.yaml
 
 5, Kiểm tra Trạng thái của Rancher:

@@ -10,7 +10,7 @@
 - CMD: helm search repo jetstack/cert-manager --versions
 
 - CMD: helm upgrade --install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace --version v1.15.3 --set crds.enabled=true
-- CMD: helm uninstall cert-manager jetstack/cert-manager --namespace cert-manager --version v1.15.3
+- CMD: helm uninstall cert-manager jetstack/cert-manager --namespace cert-manager
 - CMD: helm delete cert-manager --namespace cert-manager
 - CMD: kubectl delete namespace cert-manager
 

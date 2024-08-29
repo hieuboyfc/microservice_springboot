@@ -10,7 +10,7 @@
 - CMD: helm search repo ingress-nginx --versions
 
 - CMD: helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx --namespace ingress-nginx --create-namespace --version v4.11.2
-- CMD: helm uninstall ingress-nginx ingress-nginx/ingress-nginx --namespace ingress-nginx --version v4.11.2
+- CMD: helm uninstall ingress-nginx ingress-nginx/ingress-nginx --namespace ingress-nginx
 - CMD: helm delete ingress-nginx --namespace ingress-nginx
 - CMD: kubectl delete namespace ingress-nginx
 
