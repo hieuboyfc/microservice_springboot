@@ -4,13 +4,13 @@ metadata:
   name: rancher
   namespace: cattle-system
   labels:
-    app: rancher
+    app.kubernetes.io/name: rancher
 spec:
   type: ClusterIP
   publishNotReadyAddresses: true
   ports:
     - name: http
-      port: 8882
+      port: 80
       protocol: TCP
       targetPort: 80
     - name: https-internal
@@ -18,5 +18,5 @@ spec:
       protocol: TCP
       targetPort: 444
   selector:
-    app: rancher
+    app.kubernetes.io/name: rancher
   sessionAffinity: None

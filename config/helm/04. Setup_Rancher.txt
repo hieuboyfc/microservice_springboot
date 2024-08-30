@@ -4,14 +4,15 @@
 2, Tải Rancher về:
 - CMD: helm repo add rancher-latest https://releases.rancher.com/server-charts/latest --force-update
 - CMD: helm repo update
+- CMD: helm search repo rancher-latest/rancher
 - CMD: helm search repo rancher-latest/rancher --versions
 
 3, Cài đặt Rancher:
 ---> Cài đặt Rancher sử dụng Helm với LoadBalancer (cho các môi trường công cộng):
-- CMD: helm upgrade --install rancher rancher-latest/rancher --namespace cattle-system --set hostname=rancher.zimji.com --set replicas=1 --set ingress.tls.source=letsEncrypt --set letsEncrypt.email=hieuboyfc@gmail.com
+- CMD: helm upgrade --install rancher rancher-latest/rancher --namespace cattle-system --set hostname=rancher.zimji.com --set replicas=1 --set ingress.tls.source=letsEncrypt --set letsEncrypt.email=hieuboyfc@gmail.com --version v2.9.1
 
 ---> Cài đặt Rancher sử dụng Helm với NodePort (cho các môi trường cục bộ):
-- CMD: helm upgrade --install rancher rancher-latest/rancher --namespace cattle-system --set hostname=rancher.zimji.com --set replicas=1 --set service.type=NodePort
+- CMD: helm upgrade --install rancher rancher-latest/rancher --namespace cattle-system --set hostname=rancher.zimji.com --set replicas=1 --set service.type=NodePort --version v2.9.1
 
 ---> Gỡ cài đặt:
 - CMD: helm uninstall rancher rancher-latest/rancher --namespace cattle-system
@@ -20,33 +21,36 @@
 - CMD: helm delete rancher --namespace cattle-system
 - CMD: kubectl delete namespace cattle-system
 
-4, Kiểm Tra Trạng Thái của Rancher:
-- CMD: kubectl get pods -n cattle-system
-
-5, Kiểm Tra Dịch Vụ Rancher:
-- CMD: kubectl get svc -n cattle-system
-
-6, Xem Logs và Tình Trạng:
-- CMD: helm status rancher --namespace cattle-system
-
-7, Áp dụng các tệp YAML:
+4, Áp dụng các tệp YAML:
 - CMD: kubectl apply -f rancher-certificate.yaml
-- CMD: kubectl apply -f rancher-service.yaml
+- CMD: kubectl apply -f rancher-service.yaml --save-config
 - CMD: kubectl apply -f rancher-ingress.yaml
 
+5, Kiểm tra Trạng thái của Rancher:
+- CMD: kubectl get pods -n cattle-system
+- CMD: kubectl get svc -n cattle-system
+- CMD: kubectl get deployments -n cattle-system
+- CMD: kubectl get all -n cattle-system
+
+6, Kiểm Tra và Sửa Lỗi Trong Cấu Hình
+- CMD: kubectl describe ingress rancher -n cattle-system
 - CMD: kubectl describe ingress rancher-ingress -n cattle-system
+- CMD: kubectl describe svc rancher-ingress -n cattle-system
 - CMD: kubectl describe certificate rancher-cert --namespace cattle-system
 
 - CMD: kubectl get svc rancher -n cattle-system -o yaml > rancher-service-output.yaml
 
-8, Kiểm Tra và Sửa Lỗi Trong Cấu Hình
-- CMD: kubectl describe ingress rancher -n cattle-system
-
-9, Kiểm Tra Logs
+7, Kiểm Tra Logs
 - CMD: kubectl logs -l app=rancher -n cattle-system
 
-10, Khởi Động Lại Các Thành Phần:
+8, Xem Logs và Tình Trạng:
+- CMD: helm status rancher -n cattle-system
+
+9, Khởi Động Lại Các Thành Phần:
 - CMD: kubectl rollout restart deployment rancher -n cattle-system
+
+10, Lấy thông tin Values để chỉnh sửa (Nếu cần):
+- CMD: helm show values rancher-latest/rancher --version v2.9.1 > custom-values.yaml
 
 11, Lấy thông tin Mật khẩu Rancher:
 ---> Lấy mật khẩu mặc định:

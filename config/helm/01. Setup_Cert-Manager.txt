@@ -1,0 +1,41 @@
+1, Tạo Namespace cert-manager (nếu chưa có):
+- CMD: kubectl create namespace cert-manager
+
+2, Cài đặt Cert-Manager:
+---> Cách 1:
+===> Tải Cert-Manager về:
+- CMD: helm repo add jetstack https://charts.jetstack.io --force-update
+- CMD: helm repo update
+- CMD: helm search repo jetstack/cert-manager
+- CMD: helm search repo jetstack/cert-manager --versions
+
+- CMD: helm upgrade --install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace --version v1.15.3 --set crds.enabled=true
+- CMD: helm uninstall cert-manager jetstack/cert-manager --namespace cert-manager
+- CMD: helm delete cert-manager --namespace cert-manager
+- CMD: kubectl delete namespace cert-manager
+
+---> Cách 2:
+- CMD: kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.15.3/cert-manager.crds.yaml
+- CMD: kubectl delete -f https://github.com/cert-manager/cert-manager/releases/download/v1.15.3/cert-manager.crds.yaml
+
+- CMD: kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.15.3/cert-manager.yaml
+- CMD: kubectl delete -f https://github.com/cert-manager/cert-manager/releases/download/v1.15.3/cert-manager.yaml
+
+3, Áp dụng tệp YAML:
+
+4, Kiểm tra Trạng thái của Cert-Manager:
+- CMD: kubectl get pods -n cert-manager
+- CMD: kubectl get svc -n cert-manager
+- CMD: kubectl get deployments -n cert-manager
+- CMD: kubectl get crds
+- CMD: kubectl get all -n cert-manager
+
+5, Kiểm Tra Logs:
+- CMD: kubectl logs -l app=cert-manager -n cert-manager
+- CMD: kubectl logs cert-manager-d894bbbd4-kq6ld -n cert-manager
+
+6, Khởi Động Lại Các Thành Phần:
+- CMD: kubectl rollout restart deployment cert-manager -n cert-manager
+
+7, Lấy thông tin Values để chỉnh sửa (Nếu cần):
+- CMD: helm show values jetstack/cert-manager --version v1.15.3 > custom-values.yaml

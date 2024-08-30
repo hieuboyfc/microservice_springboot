@@ -4,10 +4,13 @@ metadata:
   name: rancher-ingress
   namespace: cattle-system
   annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: 'true'
+    nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+    nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
+    nginx.ingress.kubernetes.io/ssl-passthrough: 'true'
     nginx.ingress.kubernetes.io/rewrite-target: /
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-    # cert-manager.io/cluster-issuer: "letsencrypt-prod"
 spec:
   ingressClassName: nginx
   rules:
@@ -20,9 +23,14 @@ spec:
               service:
                 name: rancher
                 port:
-                  number: 8882
+                  number: 80
 
   tls:
     - hosts:
         - rancher.zimji.com
-      secretName: tls-rancher-ingress
+      secretName: tls-rancher-ingress  # Tên Secret chứa chứng chỉ
+
+# kubectl get ingress -A
+# kubectl get ingress rancher-ingress -n cattle-system
+# kubectl describe ingress rancher-ingress -n cattle-system
+# kubectl delete ingress rancher-ingress -n cattle-system

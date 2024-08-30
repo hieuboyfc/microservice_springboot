@@ -1,13 +1,23 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: rancher-cert
+  name: rancher-tls
   namespace: cattle-system
 spec:
-  secretName: rancher-tls
+  secretName: rancher-tls  # Tên Secret nơi chứng chỉ sẽ được lưu trữ
   issuerRef:
     name: letsencrypt-prod
     kind: ClusterIssuer
   commonName: rancher.zimji.com
   dnsNames:
     - rancher.zimji.com
+
+# kubectl get certificate -A
+# kubectl get certificate rancher-cert -n cattle-system
+# kubectl describe certificate rancher-cert -n cattle-system
+# kubectl delete certificate rancher-cert -n cattle-system
+
+# kubectl get secret -A
+# kubectl get secret rancher-tls -n cattle-system
+# kubectl describe secret rancher-tls -n cattle-system
+# kubectl delete secret rancher-tls -n cattle-system
