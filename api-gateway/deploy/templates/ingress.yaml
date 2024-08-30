@@ -2,33 +2,36 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ .Values.appName }}
+  name: {{ .Values.ingress.name | default .Chart.Name }}
   namespace: {{ .Values.namespace }}
   labels:
-    {{- include "labels" . | nindent 4 }}
+  {{- include "labels" . | nindent 4 }}
+  {{- with .Values.ingress.annotations }}
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: {{ .Values.ingress.nginx.rewriteTarget | default "/" }}
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+  {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
-  ingressClassName: {{ .Values.ingress.className | default "nginx" }}
+  ingressClassName: {{ .Values.ingress.className }}
   rules:
-    - host: {{ .Values.ingress.host }}
+    {{- range .Values.ingress.hosts }}
+    - host: {{ .host | quote }}
       http:
         paths:
-          - path: /
-            pathType: Prefix
+          {{- range .paths }}
+          - path: {{ .path }}
+            {{- if and .pathType (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
+            pathType: {{ .pathType }}
+              {{- end }}
             backend:
+              {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
-                name: {{ .Values.appName }}
+                name: {{ .serviceName }}
                 port:
-                  number: {{ .Values.service.port }}
-
-  {{- if .Values.ingress.tls }}
-  tls:
-    - secretName: {{ .Values.appName }}-tls
-      hosts:
-        - {{ .Values.ingress.host }}
-  {{- end }}
-
-{{- end }}
+                  number: {{ .servicePort }}
+                {{- else }}
+              serviceName: {{ .serviceName }}
+              servicePort: {{ .servicePort }}
+                {{- end }}
+          {{- end }}
+    {{- end }}
+{{ end }}

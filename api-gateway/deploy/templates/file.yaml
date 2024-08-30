@@ -1,0 +1,15 @@
+{{- $files := .Files }}
+{{- range $key, $value := .Values.application.files }}
+---
+apiVersion: v1
+kind: {{ $key }}
+metadata:
+  {{ range $name, $config := $value }}
+  name: {{ $name }}
+data:
+  {{ range  $config }}
+    {{ .key }}: {{ $files.Get .path | quote }}
+    {{ end }}
+    {{ end }}
+---
+{{ end }}

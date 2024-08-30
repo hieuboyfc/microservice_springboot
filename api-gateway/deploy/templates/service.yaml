@@ -1,18 +1,19 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Values.appName }}
+  name: {{ .Chart.Name }}
   namespace: {{ .Values.namespace }}
   labels:
     {{- include "labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   publishNotReadyAddresses: true
-  ports:
-    - port: {{ .Values.service.port }} # Cổng dịch vụ nội bộ
-      targetPort: {{ .Values.service.port }} # Cổng của container
-      # nodePort: {{ .Values.service.nodePort }} # Cổng NodePort (có thể chọn từ 30000-32767)
-      protocol: {{ .Values.service.protocol }}
-      name: {{ .Values.service.name }}
   selector:
     {{- include "selectorLabels" . | nindent 6 }}
+  ports:
+    {{ range .Values.service.cluster }}
+    - protocol: {{ .protocol }}
+      port: {{ .port }}
+      targetPort: {{ .target }}
+      name: {{ .name }}
+    {{ end }}

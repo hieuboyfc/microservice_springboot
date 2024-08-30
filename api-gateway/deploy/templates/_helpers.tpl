@@ -1,18 +1,13 @@
-{{/*
-Define labels for pod selectors.
-*/}}
 {{- define "selectorLabels" -}}
-app.kubernetes.io/name: {{ .Values.appName }}
-app.kubernetes.io/instance: {{ .Values.instance }}
+app.name:  {{ .Chart.Name }}
+app.instance:  {{ .Values.application.instance }}
+app.version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 
-{{/*
-Define a set of common labels for resources.
-*/}}
 {{- define "labels" -}}
-{{- include "selectorLabels" . }}
+{{ include "selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
-app.kubernetes.io/managed-by: {{ .Values.instance }}
+app.kubernetes.io/managed-by: {{ .Values.application.instance }}
 {{- end }}

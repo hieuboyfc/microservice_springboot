@@ -8,6 +8,5 @@ metadata:
 data:
   DB_HOST: {{ .Values.database.address }}
   DB_URL: jdbc:postgresql://{{ .Values.database.address }}:{{ .Values.database.port }}/{{ .Values.database.name }}?stringtype=unspecified
-  SPRING_CONFIG_LOCATION: {{ .Values.configMap.location }}
   DATE_FORMAT: {{ .Values.dateFormat }}
   TZ: {{ .Values.timezone }}

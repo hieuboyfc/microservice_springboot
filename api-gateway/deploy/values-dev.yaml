@@ -1,50 +1,41 @@
 namespace: microservice-springboot
-replicaCount: 1  # Số lượng pod triển khai
+imageDomain: hieuboyfc
 
-appName: api-gateway
-instance: zimji
-timezone: Asia/Ho_Chi_Minh
-dateFormat: yyyy-MM-dd'T'HH:mm:ssZ
-apiKey: test
-
-hpa:
-  enabled: true
-  minReplicas: 1
-  maxReplicas: 5
-  targetCPUUtilizationPercentage: 75
-  targetMemoryUtilizationPercentage: 90
-
-config:
-  application: {}
-
-service:
-  protocol: TCP
-  name: http
-  type: ClusterIP # ClusterIP, LoadBalancer, NodePort
-  port: 1997
-  nodePort: 30001
+application:
+  instance: zimji
+  files:
+    ConfigMap:
+      api-gateway:
+        - key: application.yml
+          path: config/application.yaml
+          mountPath: /config/application.yaml
+          subPath: application.yml
 
 container:
-  port: 1997
+  ports:
+    - name: http-1997
+      port: 1997
+      protocol: TCP
+  replicaCount: 1 # Số lượng pod triển khai
   image:
-    repository: hieuboyfc/api-gateway-dev
+    repository: api-gateway-dev
     pullPolicy: IfNotPresent # Always
     tag: "1.0.0"
   livenessProbe: |
     failureThreshold: 3
-    initialDelaySeconds: 30
+    initialDelaySeconds: {{ .Values.container.health.check }}
     periodSeconds: 2
     successThreshold: 1
     tcpSocket:
-      port: {{ .Values.service.port }}
+      port: {{ .Values.container.health.port }}   
     timeoutSeconds: 2
   readinessProbe: |
     failureThreshold: 3
-    initialDelaySeconds: 30
+    initialDelaySeconds: {{ .Values.container.health.check }}
     periodSeconds: 2
     successThreshold: 2
     tcpSocket:
-      port: {{ .Values.service.port }}
+      port: {{ .Values.container.health.port }}   
     timeoutSeconds: 2
   resources:
     requests:
@@ -53,17 +44,30 @@ container:
     limits:
       memory: "1Gi"
       cpu: "1"
+  env: {}
+  envFrom:
+    - configMapRef:
+        name: generic-config
+    - secretRef:
+        name: db-config
+  health:
+    check: 30
+    port: 1997
 
-configMap:
-  location: /config/
-  files:
-    application:
-      enable: true
-      name: api-gateway
-      key: application.yaml
-      path: config/application.yaml
-      mountPath: /config/application.yaml
-      subPath: application.yaml
+service:
+  type: ClusterIP
+  cluster:
+    - name: http-1997
+      protocol: TCP
+      port: 1997
+      target: 1997
+
+hpa:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 75
+  targetMemoryUtilizationPercentage: 90
 
 database:
   name: HieuBoy
@@ -105,7 +109,7 @@ podSecurityContext: {}
 securityContext: {}
   # capabilities:
   #   drop:
-  #   - ALL
+#   - ALL
 # readOnlyRootFilesystem: true
 # runAsNonRoot: true
 # runAsUser: 1000
@@ -117,14 +121,16 @@ autoscaling:
   targetCPUUtilizationPercentage: 75
   targetMemoryUtilizationPercentage: 90
 
-nodeSelector: {}
-
-affinity:
+podAntiAffinity:
   enabled: true
-  podAntiAffinity:
-    preferred: true
+
+nodeSelector: {}
 
 tolerations:
   - key: "key"
     operator: "Exists"
     effect: "NoSchedule"
+
+affinity:
+  podAntiAffinity:
+    preferred: true

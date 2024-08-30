@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.appName }}
+  name: {{ .Chart.Name }}
   namespace: {{ .Values.namespace }}
   labels:
     {{- include "labels" . | nindent 6 }}
@@ -43,20 +43,30 @@ spec:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
 
       containers:
-        - name: {{ .Values.appName }}
+        - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.container.image.repository }}:{{ .Values.container.image.tag | default .Chart.AppVersion }}"
+          image: {{ .Values.imageDomain | default "" }}{{ .Values.container.image.repository }}:{{ .Chart.AppVersion }}
           imagePullPolicy: {{ .Values.container.image.pullPolicy }}
+
+          {{if .Values.container.ports }}
           ports:
-            - name: {{ .Values.service.name }}
-              containerPort: {{ .Values.service.port }}
-              protocol: {{ .Values.service.protocol }}
+          {{ range .Values.container.ports }}
+            - name: {{ .name }}
+              containerPort: {{ .port }}
+              protocol: {{ .protocol }}
+          {{end}}
+          {{end}}
+
+          {{- with .Values.container.env }}
+          env:
+          {{- toYaml . | nindent 10 }}
+          {{end}}
+
+          {{- with .Values.container.envFrom }}
           envFrom:
-            - configMapRef:
-                name: generic-config
-            - secretRef:
-                name: db-config
+          {{- toYaml . | nindent 10 }}
+          {{end}}
 
           {{- with .Values.container.livenessProbe }}
           livenessProbe:
@@ -71,20 +81,26 @@ spec:
           resources:
             {{- toYaml .Values.container.resources | nindent 12 }}
 
-          {{- if .Values.configMap.files.application.enable }}
+          {{- if .Values.application.files }}
           volumeMounts:
-            - name: {{ .Values.configMap.files.application.name }}
+          {{- range $name, $config := .Values.application.files.ConfigMap }}
+            {{ range $config }}
+            - name: {{ $name }}
+              mountPath: {{ .mountPath }}
               readOnly: true
-              mountPath: {{ .Values.configMap.files.application.mountPath }}
-              subPath: {{ .Values.configMap.files.application.subPath }}
-          {{- end }}
+              subPath: {{ .subPath }}
+            {{ end }}
+          {{ end }}
+          {{ end }}
 
-      {{- if .Values.configMap.files.application.enable }}
+      {{- if .Values.application.files }}
       volumes:
-        - name: {{.Values.configMap.files.application.name}}
-          configMap:
-            defaultMode: 0644
-            name: {{.Values.configMap.files.application.name}}
+      {{- range $name, $config := .Values.application.files.ConfigMap }}
+      - name: {{ $name }}
+        configMap:
+          defaultMode: 0644
+          name: {{ $name }}
+      {{- end }}
       {{- end }}
 
       dnsPolicy: ClusterFirst
@@ -101,10 +117,14 @@ spec:
             - podAffinityTerm:
                 labelSelector:
                   matchExpressions:
-                    - key: app.zimji.vn/name
+                    - key: app.name
                       operator: In
                       values:
-                        - {{ .Values.appName }}
+                        - {{ .Chart.Name }}
+                    - key: app.instance
+                      operator: In
+                      values:
+                        - {{ .Values.application.instance }}
                 topologyKey: kubernetes.io/hostname
               weight: 100
 
