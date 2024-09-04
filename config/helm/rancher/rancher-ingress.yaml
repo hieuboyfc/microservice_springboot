@@ -23,7 +23,7 @@ spec:
               service:
                 name: rancher
                 port:
-                  number: 80
+                  number: 8882
 
   tls:
     - hosts:

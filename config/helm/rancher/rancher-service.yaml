@@ -10,13 +10,13 @@ spec:
   publishNotReadyAddresses: true
   ports:
     - name: http
-      port: 80
-      protocol: TCP
+      port: 8882  # Thay đổi cổng đây từ 80 sang 8080
       targetPort: 80
-    - name: https-internal
-      port: 443
       protocol: TCP
+    - name: https-internal
+      port: 2443  # Thay đổi cổng đây từ 443 sang 8443
       targetPort: 444
+      protocol: TCP
   selector:
     app.kubernetes.io/name: rancher
   sessionAffinity: None
